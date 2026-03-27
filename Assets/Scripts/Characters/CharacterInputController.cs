@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
@@ -89,6 +89,10 @@ public class CharacterInputController : MonoBehaviour
     protected Vector2 m_StartingTouch;
 	protected bool m_IsSwiping = false;
 #endif
+
+    // Mouse swipe support (works on all platforms including WebGL)
+    protected Vector2 m_MouseStartPosition;
+    protected bool m_IsMouseSwiping = false;
 
     // Cheating functions, use for testing
 	public void CheatInvincible(bool invincible)
@@ -252,6 +256,52 @@ public class CharacterInputController : MonoBehaviour
 			}
         }
 #endif
+
+        // Mouse swipe input (works on all platforms: Editor, Standalone, WebGL, etc.)
+        if (Input.GetMouseButtonDown(0))
+        {
+            m_MouseStartPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            m_IsMouseSwiping = true;
+        }
+        
+        if (m_IsMouseSwiping && Input.GetMouseButton(0))
+        {
+            Vector2 diff = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - m_MouseStartPosition;
+            diff = new Vector2(diff.x / Screen.width, diff.y / Screen.width);
+
+            if (diff.magnitude > 0.01f)
+            {
+                if (Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
+                {
+                    if (TutorialMoveCheck(2) && diff.y < 0)
+                    {
+                        Slide();
+                    }
+                    else if (TutorialMoveCheck(1))
+                    {
+                        Jump();
+                    }
+                }
+                else if (TutorialMoveCheck(0))
+                {
+                    if (diff.x < 0)
+                    {
+                        ChangeLane(-1);
+                    }
+                    else
+                    {
+                        ChangeLane(1);
+                    }
+                }
+
+                m_IsMouseSwiping = false;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            m_IsMouseSwiping = false;
+        }
 
         Vector3 verticalTargetPosition = m_TargetPosition;
 

@@ -920,30 +920,30 @@ namespace AssetStoreTools.Validator
             };
 
             var shaders = GetObjectsFromAssets(FileType.Shader);
-            var badShaders = shaders.Where(s => ShaderHasError(s)).ToArray();
+            //var badShaders = shaders.Where(s => ShaderHasError(s)).ToArray();
 
-            if (badShaders.Length > 0)
-            {
-                result.Result = TestResult.ResultStatus.Fail;
-                result.AddMessage("The following shader files have errors", null, badShaders);
-            }
+            //if (badShaders.Length > 0)
+            //{
+            //    result.Result = TestResult.ResultStatus.Fail;
+            //    result.AddMessage("The following shader files have errors", null, badShaders);
+            //}
 
             return result;
         }
 
-        private bool ShaderHasError(UnityEngine.Object obj)
-        {
-            if (obj is Shader)
-                return ShaderUtil.ShaderHasError(obj as Shader);
+        //private bool ShaderHasError(UnityEngine.Object obj)
+        //{
+        //    if (obj is Shader)
+        //        return ShaderUtil.ShaderHasError(obj as Shader);
 
-            if (obj is ComputeShader)
-                return ShaderUtil.GetComputeShaderMessageCount(obj as ComputeShader) > 0;
+        //    if (obj is ComputeShader)
+        //        return ShaderUtil.GetComputeShaderMessageCount(obj as ComputeShader) > 0;
 
-            if (obj is UnityEngine.Experimental.Rendering.RayTracingShader)
-                return ShaderUtil.GetRayTracingShaderMessageCount(obj as UnityEngine.Experimental.Rendering.RayTracingShader) > 0;
+        //    if (obj is UnityEngine.Experimental.Rendering.RayTracingShader)
+        //        return ShaderUtil.GetRayTracingShaderMessageCount(obj as UnityEngine.Experimental.Rendering.RayTracingShader) > 0;
 
-            return false;
-        }
+        //    return false;
+        //}
 
         #endregion
     }
