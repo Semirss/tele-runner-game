@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -168,7 +168,8 @@ public class LoadoutState : AState
 
         if(m_Character != null)
         {
-            m_Character.transform.Rotate(0, k_CharacterRotationSpeed * Time.deltaTime, 0, Space.Self);
+            // Character spinning disabled per request
+            // m_Character.transform.Rotate(0, k_CharacterRotationSpeed * Time.deltaTime, 0, Space.Self);
         }
 
 		charSelect.gameObject.SetActive(PlayerData.instance.characters.Count > 1);
