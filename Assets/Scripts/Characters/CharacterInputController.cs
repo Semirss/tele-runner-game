@@ -222,7 +222,7 @@ public class CharacterInputController : MonoBehaviour
 						{
 							Slide();
 						}
-						else if(TutorialMoveCheck(1))
+						else if(TutorialMoveCheck(1) && diff.y > 0)
 						{
 							Jump();
 						}
@@ -277,7 +277,7 @@ public class CharacterInputController : MonoBehaviour
                     {
                         Slide();
                     }
-                    else if (TutorialMoveCheck(1))
+                    else if (TutorialMoveCheck(1) && diff.y > 0)
                     {
                         Jump();
                     }
