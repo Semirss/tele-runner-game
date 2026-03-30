@@ -17,6 +17,8 @@ public class LoadoutState : AState
 {
     public Canvas inventoryCanvas;
 
+    public GameObject backgrounddeletable;
+
     [Header("Char UI")]
     public Text charNameDisplay;
 	public RectTransform charSelect;
@@ -78,6 +80,7 @@ public class LoadoutState : AState
 
         inventoryCanvas.gameObject.SetActive(true);
         missionPopup.gameObject.SetActive(false);
+        if (backgrounddeletable != null) backgrounddeletable.SetActive(true);
 
         charNameDisplay.text = "";
         themeNameDisplay.text = "";
@@ -402,7 +405,7 @@ public class LoadoutState : AState
                 PlayerData.instance.Save();
             }
         }
-
+        backgrounddeletable.SetActive(false);
         manager.SwitchState("Game");
     }
 
