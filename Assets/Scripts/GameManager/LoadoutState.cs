@@ -162,7 +162,7 @@ public class LoadoutState : AState
             if(interactable)
             {
                 runButton.interactable = true;
-                runButton.GetComponentInChildren<Text>().text = "Run!";
+                runButton.GetComponentInChildren<Text>().text = "Run !";
 
                 //we can always enabled, as the parent will be disabled if tutorial is already done
                 tutorialPrompt.SetActive(true);
