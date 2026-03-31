@@ -24,12 +24,12 @@ public abstract class Obstacle : MonoBehaviour
 			anim.Play();
 		}
 
-		if (audioSource != null && impactedSound != null)
-		{
-			audioSource.Stop();
-			audioSource.loop = false;
-			audioSource.clip = impactedSound;
-			audioSource.Play();
-		}
+		//if (audioSource != null && impactedSound != null)
+		//{
+		//	audioSource.Stop();
+		//	audioSource.loop = false;
+		//	audioSource.clip = impactedSound;
+		//	audioSource.Play();
+		//}
 	}
 }

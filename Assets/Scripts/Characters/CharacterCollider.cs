@@ -145,13 +145,13 @@ public class CharacterCollider : MonoBehaviour
 
 			if (controller.currentLife > 0)
 			{
-				m_Audio.PlayOneShot(controller.character.hitSound);
+				
                 SetInvincible ();
 			}
             // The collision killed the player, record all data to analytics.
 			else
 			{
-				m_Audio.PlayOneShot(controller.character.deathSound);
+				//m_Audio.PlayOneShot(controller.character.deathSound);
 
 				m_DeathData.character = controller.character.characterName;
 				m_DeathData.themeUsed = controller.trackManager.currentTheme.themeName;

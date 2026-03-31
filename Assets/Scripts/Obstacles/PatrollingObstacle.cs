@@ -57,13 +57,13 @@ public class PatrollingObstacle : Obstacle
 
     public override void Setup()
 	{
-		m_Audio = GetComponent<AudioSource>();
-		if(m_Audio != null && patrollingSound != null && patrollingSound.Length > 0)
-		{
-			m_Audio.loop = true;
-			m_Audio.clip = patrollingSound[Random.Range(0,patrollingSound.Length)];
-			m_Audio.Play();
-		}
+		//m_Audio = GetComponent<AudioSource>();
+		//if(m_Audio != null && patrollingSound != null && patrollingSound.Length > 0)
+		//{
+		//	m_Audio.loop = true;
+		//	m_Audio.clip = patrollingSound[Random.Range(0,patrollingSound.Length)];
+		//	m_Audio.Play();
+		//}
 
 		m_OriginalPosition = transform.localPosition + transform.right * m_Segement.manager.laneOffset;
 		transform.localPosition = m_OriginalPosition;
