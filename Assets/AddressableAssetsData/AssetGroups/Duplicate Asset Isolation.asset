@@ -85,11 +85,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2b755775ae966024fab169f5ae2e95d6
-    m_Address: Assets/Models/Cat.fbx
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b75d09c3bf9ba64cbccca5ff894cbfa
     m_Address: Assets/Models/Daytime/Pipes.fbx
     m_ReadOnly: 0
