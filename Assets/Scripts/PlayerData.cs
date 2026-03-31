@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 #if UNITY_ANALYTICS
@@ -244,11 +244,12 @@ public class PlayerData
         m_Instance.coins = 0;
         m_Instance.premium = 0;
 
-		m_Instance.characters.Add("Add Name");
+		m_Instance.characters.Add("Trash Cat");
 		m_Instance.themes.Add("Day");
 
         m_Instance.ftueLevel = 0;
         m_Instance.rank = 0;
+        m_Instance.tutorialDone = true;
 
         m_Instance.CheckMissionsCount();
 
@@ -383,6 +384,7 @@ public class PlayerData
         {
             tutorialDone = r.ReadBoolean();
         }
+        tutorialDone = true;
 
         r.Close();
     }

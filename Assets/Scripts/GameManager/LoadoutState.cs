@@ -45,8 +45,6 @@ public class LoadoutState : AState
     public MissionUI missionPopup;
 	public Button runButton;
 
-    public GameObject tutorialBlocker;
-    public GameObject tutorialPrompt;
 
 	public MeshFilter skyMeshFilter;
     public MeshFilter UIGroundFilter;
@@ -75,9 +73,6 @@ public class LoadoutState : AState
 
     public override void Enter(AState from)
     {
-        tutorialBlocker.SetActive(!PlayerData.instance.tutorialDone);
-        tutorialPrompt.SetActive(false);
-
         inventoryCanvas.gameObject.SetActive(true);
         missionPopup.gameObject.SetActive(false);
         if (backgrounddeletable != null) backgrounddeletable.SetActive(true);
@@ -164,8 +159,6 @@ public class LoadoutState : AState
                 runButton.interactable = true;
                 runButton.GetComponentInChildren<Text>().text = "Run !";
 
-                //we can always enabled, as the parent will be disabled if tutorial is already done
-                tutorialPrompt.SetActive(true);
             }
         }
 
@@ -397,13 +390,10 @@ public class LoadoutState : AState
 
     public void StartGame()
     {
-        if (PlayerData.instance.tutorialDone)
+        if (PlayerData.instance.ftueLevel == 1)
         {
-            if (PlayerData.instance.ftueLevel == 1)
-            {
-                PlayerData.instance.ftueLevel = 2;
-                PlayerData.instance.Save();
-            }
+            PlayerData.instance.ftueLevel = 2;
+            PlayerData.instance.Save();
         }
         backgrounddeletable.SetActive(false);
         manager.SwitchState("Game");

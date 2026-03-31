@@ -1,0 +1,497 @@
+﻿
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:19:    m_Address: 
+Assets/Prefabs/UI/AddMissionButton.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:24:    m_Address: 
+Assets/Prefabs/UI/Header.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:29:    m_Address: Rubbish Raccoon
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:35:    m_Address: 
+Assets/Prefabs/UI/MissionEntry.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:40:    m_Address: 
+Assets/Prefabs/UI/PowerupIcon.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:45:    m_Address: Trash Cat
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:51:    m_Address: 
+Assets/Prefabs/UI/MissionPopup.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:56:    m_Address: 
+Assets/Prefabs/UI/ItemEntry.prefab
+Assets\AddressableAssetsData\AssetGroups\Chara
+cters.asset:61:    m_Address: 
+Assets/Prefabs/UI/Score.prefab
+Assets\AddressableAssetsData\AssetGroups\Coin.
+asset:21:    m_Address: Pickup
+Assets\AddressableAssetsData\AssetGroups\Coin.
+asset:25:    m_Address: PremiumCollectible
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:21:    m_Address: 
+ObstacleBin
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:25:    m_Address: 
+ObstacleRoadworksBarrier
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:29:    m_Address: 
+ObstacleHighBarrier
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:33:    m_Address: 
+ObstacleLowBarrier
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:37:    m_Address: 
+ObstacleWheelyBin
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:41:    m_Address: 
+ObstacleRat
+Assets\AddressableAssetsData\AssetGroups\Day-T
+heme-Obstacles.asset:45:    m_Address: 
+ObstacleRoadworksCone
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Sky.asset:21:    m_Address: DefaultCloud01
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Sky.asset:25:    m_Address: DefaultCloud03
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Sky.asset:29:    m_Address: DefaultCloud02
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Zones.asset:21:    m_Address: 
+Assets/Bundles/Themes/Default/Urban
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Zones.asset:25:    m_Address: 
+Assets/Bundles/Themes/Default/Suburbs
+Assets\AddressableAssetsData\AssetGroups\Defau
+lt-Zones.asset:29:    m_Address: 
+Assets/Bundles/Themes/Default/Industrial
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:19:    m_Address: 
+Assets/Materials/Dumpster.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:24:    m_Address: 
+Assets/Animation/ObstacleBin.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:29:    m_Address: 
+Assets/Sounds/SFX/TrafficCone.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:34:    m_Address: 
+Assets/Materials/Rubbish.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:39:    m_Address: 
+Assets/Sounds/SFX/WheelieBin.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:44:    m_Address: 
+Assets/Materials/CloudMaterial.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:49:    m_Address: 
+Assets/Textures/Graffiti/Graffiti13.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:54:    m_Address: 
+Assets/Models/Daytime/Warehouse03.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:59:    m_Address: 
+Assets/Models/Daytime/BinBagOpen.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:64:    m_Address: 
+Assets/Animation/Rat_Run.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:69:    m_Address: 
+Assets/Models/Daytime/WheelyBinBlue.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:74:    m_Address: 
+Assets/Models/Rat.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:79:    m_Address: 
+Assets/Textures/RatAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:84:    m_Address: 
+Assets/Models/Daytime/FarBackBuilding02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:89:    m_Address: 
+Assets/Models/Cat.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:94:    m_Address: 
+Assets/Models/Daytime/Pipes.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:99:    m_Address: 
+Assets/Models/Daytime/RoadWorksBarrier01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:104:    m_Address: 
+Assets/Models/Daytime/House.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:109:    m_Address: 
+Assets/Sounds/Mixers/MainMix.mixer
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:114:    m_Address: 
+Assets/Models/Daytime/Cloud02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:119:    m_Address: 
+Assets/Animation/ObstacleRoadWorksBarrier_Deat
+h.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:124:    m_Address: 
+Assets/Materials/Bin.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:129:    m_Address: 
+Assets/Models/Daytime/TelegraphPole02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:134:    m_Address: 
+Assets/Models/Racoon.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:139:    m_Address: 
+Assets/Textures/Graffiti/Graffiti06.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:144:    m_Address: 
+Assets/Materials/WashingLineClothes.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:149:    m_Address: 
+Assets/Textures/PlasterAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:154:    m_Address: 
+Assets/Materials/Plaster.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:159:    m_Address: 
+Assets/Animation/ObstacleWorkCone_Death.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:164:    m_Address: 
+Assets/Models/Daytime/Road02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:169:    m_Address: 
+Assets/Shaders/CurvedUnlitCloud.shader
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:174:    m_Address: 
+Assets/Textures/RubbishAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:179:    m_Address: 
+Assets/Textures/SkipAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:184:    m_Address: 
+Assets/Sounds/SFX/TrashCan.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:189:    m_Address: 
+Assets/Materials/tele-ads.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:194:    m_Address: 
+Assets/Sounds/SFX/Rat/RatLoop1.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:199:    m_Address: 
+Assets/Materials/BinBag.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:204:    m_Address: 
+Assets/Textures/CorrugatedMetalAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:209:    m_Address: 
+Assets/Models/Magnet.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:214:    m_Address: 
+Assets/Materials/Pipe.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:219:    m_Address: 
+Assets/Models/Daytime/BinBagClosed.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:224:    m_Address: 
+Assets/Materials/WheelyBin.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:229:    m_Address: 
+Assets/Textures/Graffiti/Graffiti05.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:234:    m_Address: 
+Assets/Models/Daytime/TelegraphWires.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:239:    m_Address: 
+Assets/Models/Daytime/Warehouse02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:244:    m_Address: 
+Assets/Textures/BinBagsAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:249:    m_Address: 
+Assets/Textures/Graffiti/Graffiti11.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:254:    m_Address: 
+Assets/Textures/BrickWallAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:259:    m_Address: 
+Assets/Models/Daytime/BackgroundBuilding02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:264:    m_Address: 
+Assets/Models/Daytime/FarBackBuilding03.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:269:    m_Address: 
+Assets/Textures/TreeBranchAlbedo.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:274:    m_Address: 
+Assets/Animation/ObstacleWheelyBin.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:279:    m_Address: 
+Assets/Models/Daytime/TelegraphPole01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:284:    m_Address: 
+Assets/Materials/Graffiti.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:289:    m_Address: 
+Assets/Models/Daytime/Wire.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:294:    m_Address: 
+Assets/Sounds/SFX/Rat/RatHit.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:299:    m_Address: 
+Assets/Textures/Graffiti/Graffiti07.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:304:    m_Address: 
+Assets/Shaders/CurvedUnlit.shader
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:309:    m_Address: 
+Assets/Animation/Rat_Death.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:314:    m_Address: 
+Assets/Materials/CorrugatedMetal.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:319:    m_Address: 
+Assets/Models/Daytime/Road01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:324:    m_Address: 
+Assets/Animation/ObstacleRoadWorksBarrierLow_D
+eath.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:329:    m_Address: 
+Assets/Textures/WashingLineClothesAlbedo.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:334:    m_Address: 
+Packages/com.unity.render-pipelines.universal/
+Runtime/Materials/Sprite-Unlit-Default.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:339:    m_Address: 
+Assets/Materials/BrickWall.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:344:    m_Address: 
+Assets/Sounds/SFX/WoodenBarrier.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:349:    m_Address: 
+Assets/Materials/Rat.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:354:    m_Address: 
+Assets/Materials/VCOL.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:359:    m_Address: 
+Assets/Materials/TreeBranch.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:364:    m_Address: 
+Assets/Materials/PickupParticle.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:369:    m_Address: 
+Assets/Models/Daytime/BrickWall.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:374:    m_Address: 
+Assets/Animation/Animators/Rat.controller
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:379:    m_Address: 
+Assets/Textures/DumpsterAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:384:    m_Address: 
+Assets/Sounds/SFX/Rat/RatLoop2.ogg
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:389:    m_Address: 
+Assets/Models/Daytime/RoadWorksCone.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:394:    m_Address: 
+Assets/Font/LuckiestGuy.ttf
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:399:    m_Address: 
+Assets/Textures/Car02Albedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:404:    m_Address: 
+Assets/Textures/Graffiti/Graffiti04.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:409:    m_Address: 
+Assets/Animation/Animators/CharacterAnimation.
+controller
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:414:    m_Address: 
+Assets/Materials/Car01.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:419:    m_Address: 
+Assets/Materials/Car02.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:424:    m_Address: 
+Assets/Textures/Graffiti/Graffiti09.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:429:    m_Address: 
+Assets/Animation/ObstacleRoadWorksBarrierHigh_
+Death.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:434:    m_Address: 
+Assets/Textures/PipeAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:439:    m_Address: 
+Assets/Models/Daytime/Car01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:444:    m_Address: 
+Assets/Textures/Car01Albedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:449:    m_Address: 
+Assets/Models/Daytime/DumpsterGreen.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:454:    m_Address: 
+Assets/Materials/BlobShadow.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:459:    m_Address: 
+Assets/Textures/Particle01.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:464:    m_Address: 
+Assets/Textures/Graffiti/Graffiti02.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:469:    m_Address: 
+Assets/Models/Daytime/WheelyBinRed.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:474:    m_Address: 
+Assets/Textures/Graffiti/Graffiti03.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:479:    m_Address: 
+Assets/Textures/Graffiti/Graffiti08.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:484:    m_Address: 
+Assets/Textures/Graffiti/Graffiti01.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:489:    m_Address: 
+Assets/Models/Daytime/Car02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:494:    m_Address: 
+Assets/Textures/BlobShadow.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:499:    m_Address: 
+Assets/Textures/Graffiti/Graffiti12.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:504:    m_Address: 
+Assets/Materials/WoodSlats.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:509:    m_Address: 
+Assets/Materials/Skip.mat
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:514:    m_Address: 
+Assets/Textures/Graffiti/Graffiti10.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:519:    m_Address: 
+Assets/UI/UISpritesheet.png
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:524:    m_Address: 
+Assets/Models/Daytime/Cloud03.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:529:    m_Address: 
+Assets/Models/Daytime/BackgroundBuilding01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:534:    m_Address: 
+Assets/Models/NightTime/ObstacleWheelyBinNight
+.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:539:    m_Address: 
+Assets/Shaders/CurvedUnlitAlpha.shader
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:544:    m_Address: 
+Assets/Models/Daytime/Warehouse01.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:549:    m_Address: 
+Assets/Models/Daytime/PlasteredWall02.fbx
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:554:    m_Address: 
+Assets/Textures/SlatsAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:559:    m_Address: 
+Assets/Textures/WheelyBinAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Dupli
+cate Asset Isolation.asset:564:    m_Address: 
+Assets/Textures/BinAlbedo.tif
+Assets\AddressableAssetsData\AssetGroups\Night
+-Sky.asset:21:    m_Address: NightCloud02
+Assets\AddressableAssetsData\AssetGroups\Night
+-Sky.asset:25:    m_Address: NightCloud03
+Assets\AddressableAssetsData\AssetGroups\Night
+-Sky.asset:29:    m_Address: NightCloud01
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:21:    m_Address: 
+ObstacleRat
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:25:    m_Address: 
+ObstacleRoadworksCone
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:29:    m_Address: 
+ObstacleHighBarrier
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:33:    m_Address: 
+ObstacleWheelyBin
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:37:    m_Address: 
+ObstacleRoadworksBarrier
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:41:    m_Address: 
+ObstacleLowBarrier
+Assets\AddressableAssetsData\AssetGroups\Night
+-Theme-Obstacles.asset:45:    m_Address: 
+ObstacleBin
+Assets\AddressableAssetsData\AssetGroups\Night
+-Zones.asset:21:    m_Address: 
+Assets/Bundles/Themes/NightTime/Industrial
+Assets\AddressableAssetsData\AssetGroups\Night
+-Zones.asset:25:    m_Address: 
+Assets/Bundles/Themes/NightTime/Urban
+Assets\AddressableAssetsData\AssetGroups\Night
+-Zones.asset:29:    m_Address: 
+Assets/Bundles/Themes/NightTime/Suburbs
+Assets\AddressableAssetsData\AssetGroups\Parti
+cles.asset:21:    m_Address: 
+CoinMagnetCollectParticles
+Assets\AddressableAssetsData\AssetGroups\Parti
+cles.asset:27:    m_Address: 
+MultiplyerCollectParticles
+Assets\AddressableAssetsData\AssetGroups\Parti
+cles.asset:33:    m_Address: 
+FishBoneCollectParticles
+Assets\AddressableAssetsData\AssetGroups\Parti
+cles.asset:39:    m_Address: 
+InvincibilityCollectParticles
+Assets\AddressableAssetsData\AssetGroups\Parti
+cles.asset:45:    m_Address: CrashParticle
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:21:    m_Address: ScoreMultiplier
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:25:    m_Address: Invincibilty
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:29:    m_Address: CoinMagnet
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:33:    m_Address: MagnetParticles
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:37:    m_Address: ExtraLifeParticles
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:41:    m_Address: 
+InvincibilityParticles
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:45:    m_Address: 
+MultiplierParticles
+Assets\AddressableAssetsData\AssetGroups\Power
+ups.asset:49:    m_Address: ExtraLife
+Assets\AddressableAssetsData\AssetGroups\Theme
+s.asset:21:    m_Address: themeData
+Assets\AddressableAssetsData\AssetGroups\Theme
+s.asset:26:    m_Address: themeData
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:21:    m_Address: Tutorial Left 
+Right 2
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:25:    m_Address: Tutorial Up 3
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:29:    m_Address: Tutorial Left 
+Right
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:33:    m_Address: Tutorial Down 2
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:37:    m_Address: Tutorial Down
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:41:    m_Address: Tutorial Left 
+Right 3
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:45:    m_Address: Tutorial Down 3
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:49:    m_Address: Tutorial Up
+Assets\AddressableAssetsData\AssetGroups\Tutor
+ial.asset:53:    m_Address: Tutorial Up 2
+
+

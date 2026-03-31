@@ -42,8 +42,6 @@ public class CharacterInputController : MonoBehaviour
 	public AudioClip powerUpUseSound;
 	public AudioSource powerupSource;
 
-    [HideInInspector] public int currentTutorialLevel;
-    [HideInInspector] public bool tutorialWaitingForValidation;
 
     protected int m_Coins;
     protected int m_Premium;
@@ -172,12 +170,6 @@ public class CharacterInputController : MonoBehaviour
         }
     }
 
-    protected bool TutorialMoveCheck(int tutorialLevel)
-    {
-        tutorialWaitingForValidation = currentTutorialLevel != tutorialLevel;
-
-        return (!TrackManager.instance.isTutorial || currentTutorialLevel >= tutorialLevel);
-    }
 
 	protected void Update ()
     {
@@ -185,19 +177,19 @@ public class CharacterInputController : MonoBehaviour
         // Use key input in editor or standalone
         // disabled if it's tutorial and not thecurrent right tutorial level (see func TutorialMoveCheck)
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && TutorialMoveCheck(0))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             ChangeLane(-1);
         }
-        else if(Input.GetKeyDown(KeyCode.RightArrow) && TutorialMoveCheck(0))
+        else if(Input.GetKeyDown(KeyCode.RightArrow))
         {
             ChangeLane(1);
         }
-        else if(Input.GetKeyDown(KeyCode.UpArrow) && TutorialMoveCheck(1))
+        else if(Input.GetKeyDown(KeyCode.UpArrow))
         {
             Jump();
         }
-		else if (Input.GetKeyDown(KeyCode.DownArrow) && TutorialMoveCheck(2))
+		else if (Input.GetKeyDown(KeyCode.DownArrow))
 		{
 			if(!m_Sliding)
 				Slide();
@@ -218,16 +210,16 @@ public class CharacterInputController : MonoBehaviour
 				{
 					if(Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
 					{
-						if(TutorialMoveCheck(2) && diff.y < 0)
+						if(diff.y < 0)
 						{
 							Slide();
 						}
-						else if(TutorialMoveCheck(1) && diff.y > 0)
+						else if(diff.y > 0)
 						{
 							Jump();
 						}
 					}
-					else if(TutorialMoveCheck(0))
+					else
 					{
 						if(diff.x < 0)
 						{
@@ -273,16 +265,16 @@ public class CharacterInputController : MonoBehaviour
             {
                 if (Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
                 {
-                    if (TutorialMoveCheck(2) && diff.y < 0)
+                    if (diff.y < 0)
                     {
                         Slide();
                     }
-                    else if (TutorialMoveCheck(1) && diff.y > 0)
+                    else if (diff.y > 0)
                     {
                         Jump();
                     }
                 }
-                else if (TutorialMoveCheck(0))
+                else
                 {
                     if (diff.x < 0)
                     {

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement;
@@ -13,14 +13,8 @@ public class SimpleBarricade : Obstacle
     
     public override IEnumerator Spawn(TrackSegment segment, float t)
     {
-        //the tutorial very firts barricade need to be center and alone, so player can swipe safely in bother direction to avoid it
-        bool isTutorialFirst = TrackManager.instance.isTutorial && TrackManager.instance.firstObstacle && segment == segment.manager.currentSegment;
-
-        if (isTutorialFirst)
-            TrackManager.instance.firstObstacle = false;
-        
-        int count = isTutorialFirst ? 1 : Random.Range(k_MinObstacleCount, k_MaxObstacleCount + 1);
-        int startLane = isTutorialFirst ? 0 : Random.Range(k_LeftMostLaneIndex, k_RightMostLaneIndex + 1);
+        int count = Random.Range(k_MinObstacleCount, k_MaxObstacleCount + 1);
+        int startLane = Random.Range(k_LeftMostLaneIndex, k_RightMostLaneIndex + 1);
 
         Vector3 position;
         Quaternion rotation;

@@ -9770,8 +9770,6 @@ MonoBehaviour:
   leaderboard: {fileID: 1815696064}
   missionPopup: {fileID: 137514649}
   runButton: {fileID: 1393864684}
-  tutorialBlocker: {fileID: 1557869168}
-  tutorialPrompt: {fileID: 610653253}
   skyMeshFilter: {fileID: 517316206}
   UIGroundFilter: {fileID: 517316206}
   menuTheme: {fileID: 8300000, guid: 1588137430bfbab4b9a00ba3b220b82b, type: 3}
@@ -10643,8 +10641,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0.000022888184, y: -519.5}
-  m_SizeDelta: {x: 698.79694, y: 141}
+  m_AnchoredPosition: {x: -3.2045, y: -519.5}
+  m_SizeDelta: {x: 470.21, y: 141}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &960587899
 MonoBehaviour:
@@ -10668,7 +10666,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: ab2cfde409d710b47b0b502877abb479, type: 3}
-    m_FontSize: 64
+    m_FontSize: 37
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 6
@@ -15490,11 +15488,6 @@ MonoBehaviour:
   adsForLifeButton: {fileID: 965292399}
   premiumCurrencyOwned: {fileID: 560657058}
   PowerupIconPrefab: {fileID: 102596, guid: 94cb557246c11d14388842cc08be79a8, type: 3}
-  tutorialValidatedObstacles: {fileID: 821251250}
-  sideSlideTuto: {fileID: 1094069291}
-  upSlideTuto: {fileID: 428968435}
-  downSlideTuto: {fileID: 1984826506}
-  finishTuto: {fileID: 52346560}
   adsPlacementId: reviveVideo
   adsRewarded: 1
 --- !u!1 &1245708846
@@ -25685,7 +25678,6 @@ MonoBehaviour:
   skyMeshFilter: {fileID: 201362454}
   parallaxRoot: {fileID: 1617204952}
   parallaxRatio: 0.8
-  tutorialThemeData: {fileID: 11400000, guid: d2594127ff496284399060a56ff8ad68, type: 2}
 --- !u!4 &1958487561
 Transform:
   m_ObjectHideFlags: 0
@@ -31908,8 +31900,6 @@ MonoBehaviour:
   slideSound: {fileID: 8300000, guid: febd5a5a8b245774fbfa9f0bef51e0b6, type: 3}
   powerUpUseSound: {fileID: 8300000, guid: defdb98bfddc24748aead1ce73ba7972, type: 3}
   powerupSource: {fileID: 2094493435}
-  currentTutorialLevel: 0
-  tutorialWaitingForValidation: 0
 --- !u!4 &2094493433
 Transform:
   m_ObjectHideFlags: 0
