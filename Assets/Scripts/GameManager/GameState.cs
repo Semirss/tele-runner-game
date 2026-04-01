@@ -153,11 +153,14 @@ public class GameState : AState
             return;
         }
 
-        if (trackManager.isLoaded)
+        if (!trackManager.isLoaded)
         {
-            CharacterInputController chrCtrl = trackManager.characterController;
+            UpdateUI();
+            return;
+        }
 
-            m_TimeSinceStart += Time.deltaTime;
+        CharacterInputController chrCtrl = trackManager.characterController;
+        m_TimeSinceStart += Time.deltaTime;
 
             if (chrCtrl.currentLife <= 0)
             {
@@ -219,7 +222,6 @@ public class GameState : AState
             UpdateUI();
 
             currentModifier.OnRunTick(this);
-        }
     }
 
 	void OnApplicationPause(bool pauseStatus)
@@ -296,7 +298,13 @@ public class GameState : AState
 
 		distanceText.text = Mathf.FloorToInt(trackManager.worldDistance).ToString() + "m";
 
-		if (trackManager.timeToStart >= 0)
+		if (!trackManager.isLoaded)
+		{
+			countdownText.gameObject.SetActive(true);
+			countdownText.text = "Loading...";
+			m_CountdownRectTransform.localScale = Vector3.one;
+		}
+		else if (trackManager.timeToStart >= 0)
 		{
 			countdownText.gameObject.SetActive(true);
 			countdownText.text = Mathf.Ceil(trackManager.timeToStart).ToString();

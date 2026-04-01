@@ -169,6 +169,8 @@ public class TrackManager : MonoBehaviour
 
     public IEnumerator Begin()
     {
+        isLoaded = false;
+
         if (!m_Rerun)
         {
             m_CameraOriginalPos = Camera.main.transform.position;
@@ -205,7 +207,6 @@ public class TrackManager : MonoBehaviour
             characterController.Init();
             characterController.CheatInvincible(invincible);
             
-            //Instantiate(CharacterDatabase.GetCharacter(PlayerData.instance.characters[PlayerData.instance.usedCharacter]), Vector3.zero, Quaternion.identity);
             player.transform.SetParent(characterController.characterCollider.transform, false);
             Camera.main.transform.SetParent(characterController.transform, true);
 
@@ -243,8 +244,13 @@ public class TrackManager : MonoBehaviour
         }
 
         characterController.Begin();
-        StartCoroutine(WaitToStart());
+
+        // Wait until at least the minimum required segments have loaded via Addressables before starting
+        // This prevents the player from running into an empty world on slow connections (WebGL/mobile)
+        yield return new WaitUntil(() => m_Segments.Count >= k_StartingSafeSegments + 1);
+
         isLoaded = true;
+        StartCoroutine(WaitToStart());
     }
 
     public void End()
