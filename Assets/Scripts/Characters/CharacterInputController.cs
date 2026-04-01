@@ -250,49 +250,52 @@ public class CharacterInputController : MonoBehaviour
 #endif
 
         // Mouse swipe input (works on all platforms: Editor, Standalone, WebGL, etc.)
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchCount == 0)
         {
-            m_MouseStartPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            m_IsMouseSwiping = true;
-        }
-        
-        if (m_IsMouseSwiping && Input.GetMouseButton(0))
-        {
-            Vector2 diff = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - m_MouseStartPosition;
-            diff = new Vector2(diff.x / Screen.width, diff.y / Screen.width);
-
-            if (diff.magnitude > 0.01f)
+            if (Input.GetMouseButtonDown(0))
             {
-                if (Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
+                m_MouseStartPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                m_IsMouseSwiping = true;
+            }
+            
+            if (m_IsMouseSwiping && Input.GetMouseButton(0))
+            {
+                Vector2 diff = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - m_MouseStartPosition;
+                diff = new Vector2(diff.x / Screen.width, diff.y / Screen.width);
+
+                if (diff.magnitude > 0.01f)
                 {
-                    if (diff.y < 0)
+                    if (Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
                     {
-                        Slide();
-                    }
-                    else if (diff.y > 0)
-                    {
-                        Jump();
-                    }
-                }
-                else
-                {
-                    if (diff.x < 0)
-                    {
-                        ChangeLane(-1);
+                        if (diff.y < 0)
+                        {
+                            Slide();
+                        }
+                        else if (diff.y > 0)
+                        {
+                            Jump();
+                        }
                     }
                     else
                     {
-                        ChangeLane(1);
+                        if (diff.x < 0)
+                        {
+                            ChangeLane(-1);
+                        }
+                        else
+                        {
+                            ChangeLane(1);
+                        }
                     }
-                }
 
+                    m_IsMouseSwiping = false;
+                }
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
                 m_IsMouseSwiping = false;
             }
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            m_IsMouseSwiping = false;
         }
 
         Vector3 verticalTargetPosition = m_TargetPosition;
