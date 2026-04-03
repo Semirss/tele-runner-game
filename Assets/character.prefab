@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 240596576593028209}
-  - component: {fileID: 4990988096357354500}
   - component: {fileID: 4925974564802958354}
   - component: {fileID: 5927847629415080227}
   - component: {fileID: 2994631422688366670}
@@ -36,28 +35,6 @@ Transform:
   - {fileID: 97407242508302227}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &4990988096357354500
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8173967867545342893}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: cb8873206a27be742a7b0a3827b55e78, type: 3}
-  m_Controller: {fileID: 9100000, guid: 94c49c3d0ed22ed4ea55ef828cc02140, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 0
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4925974564802958354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +229,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: ttyy
       objectReference: {fileID: 0}
+    - target: {fileID: 464141968781854204, guid: cb8873206a27be742a7b0a3827b55e78,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 464141968781854204, guid: cb8873206a27be742a7b0a3827b55e78,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0177ef24d2c4d2f4cb760f26473d0909, type: 2}
     - target: {fileID: 919132149155446097, guid: cb8873206a27be742a7b0a3827b55e78,
         type: 3}
       propertyPath: m_Name
