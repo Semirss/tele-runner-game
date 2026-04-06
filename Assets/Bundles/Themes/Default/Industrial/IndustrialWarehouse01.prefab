@@ -190,7 +190,8 @@ MeshRenderer:
   m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 10725cd9411a433478b033194433322c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -444,7 +445,8 @@ MeshRenderer:
   m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 10725cd9411a433478b033194433322c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -795,67 +797,72 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 334.569
+      value: 321.7551
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 904.852
+      value: 873.69635
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0458
+      value: 0.1017
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.28
+      value: 1.95
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.5525
+      value: 4.6527
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071067
+      value: 0.68055254
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0.73269564
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.0015480996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.0017185962
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 85.766
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 176.408
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 176.422
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
         type: 3}
       propertyPath: m_Name
       value: roadssd
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d9b0f3cc790f4a04fa1a6c306cf13c4c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
