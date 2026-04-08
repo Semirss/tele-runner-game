@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: download (2)
+  m_Name: FUkxrDiWYAsYdVt
   m_Shader: {fileID: 4800000, guid: 456ac8606d109424f8d7e478f290f62f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ef80e96b2b59dc64391612294b8aa117, type: 3}
+        m_Texture: {fileID: 2800000, guid: 468aa3d742230434598f1e03a866604d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
