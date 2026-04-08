@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 397d959cc2da2684c8109d35be73c4a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: Trash Ca
+  characterName: male
   cost: 0
   premiumCost: 0
   accessories:
@@ -81,7 +81,7 @@ MonoBehaviour:
   - {fileID: 114000013004132168}
   - {fileID: 114000012881478878}
   animator: {fileID: 9501716}
-  icon: {fileID: 21300054, guid: e1a536f74c7ef384a8d7132148ace0c8, type: 3}
+  icon: {fileID: 21300000, guid: 5bec07270472bc7448425003ffb099bc, type: 3}
   jumpSound: {fileID: 8300000, guid: 819da6b208e0c0342b38dbbba363b740, type: 3}
   hitSound: {fileID: 8300000, guid: 4df05e5a3da67b74ab57e4fdbff8c1fa, type: 3}
   deathSound: {fileID: 8300000, guid: 3acd66c1c1f3d3a499214949f2b98bc5, type: 3}

@@ -52,7 +52,7 @@ MonoBehaviour:
   premiumCost: 0
   accessories: []
   animator: {fileID: 6321404104681467369}
-  icon: {fileID: 21300054, guid: e1a536f74c7ef384a8d7132148ace0c8, type: 3}
+  icon: {fileID: 21300000, guid: 5bec07270472bc7448425003ffb099bc, type: 3}
   jumpSound: {fileID: 8300000, guid: 819da6b208e0c0342b38dbbba363b740, type: 3}
   hitSound: {fileID: 8300000, guid: 4df05e5a3da67b74ab57e4fdbff8c1fa, type: 3}
   deathSound: {fileID: 8300000, guid: 3acd66c1c1f3d3a499214949f2b98bc5, type: 3}
