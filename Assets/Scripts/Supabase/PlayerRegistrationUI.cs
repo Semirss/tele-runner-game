@@ -4,21 +4,31 @@ using UnityEngine.UI;
 
 public class PlayerRegistrationUI : MonoBehaviour
 {
+    enum ProfileMode
+    {
+        Register,
+        SignIn
+    }
+
     static PlayerRegistrationUI s_Instance;
 
+    Text m_TitleText;
     InputField m_NameInput;
     InputField m_PhoneInput;
     InputField m_EmailInput;
     InputField m_PasswordInput;
+    Button m_RegisterModeButton;
+    Button m_SignInModeButton;
     Button m_RegisterButton;
     Button m_SignInButton;
     Text m_StatusText;
+    ProfileMode m_Mode = ProfileMode.Register;
 
     public static void Show()
     {
         Ensure();
         s_Instance.gameObject.SetActive(true);
-        s_Instance.ResetStatus();
+        s_Instance.SetMode(ProfileMode.Register);
     }
 
     public static void Ensure()
@@ -58,7 +68,7 @@ public class PlayerRegistrationUI : MonoBehaviour
         Image backdrop = CreateImage("Backdrop", transform, new Color(0f, 0f, 0f, 0.72f));
         Stretch(backdrop.rectTransform);
 
-        GameObject panel = CreateRect("Panel", transform, new Vector2(680f, 680f));
+        GameObject panel = CreateRect("Panel", transform, new Vector2(680f, 760f));
         Image panelImage = panel.AddComponent<Image>();
         panelImage.color = new Color(0.08f, 0.1f, 0.13f, 0.96f);
 
@@ -70,31 +80,58 @@ public class PlayerRegistrationUI : MonoBehaviour
         layout.childControlWidth = true;
         layout.childForceExpandWidth = true;
 
-        Text title = CreateText("Title", panel.transform, "Create player profile", 36, TextAnchor.MiddleCenter);
-        title.color = Color.white;
-        title.fontStyle = FontStyle.Bold;
-        SetPreferredHeight(title.gameObject, 58f);
+        m_TitleText = CreateText("Title", panel.transform, "Register player", 36, TextAnchor.MiddleCenter);
+        m_TitleText.color = Color.white;
+        m_TitleText.fontStyle = FontStyle.Bold;
+        SetPreferredHeight(m_TitleText.gameObject, 58f);
+
+        GameObject modeButtons = CreateRect("ModeButtons", panel.transform, new Vector2(0f, 64f));
+        HorizontalLayoutGroup modeLayout = modeButtons.AddComponent<HorizontalLayoutGroup>();
+        modeLayout.spacing = 18;
+        modeLayout.childControlWidth = true;
+        modeLayout.childForceExpandWidth = true;
+        modeLayout.childControlHeight = true;
+        modeLayout.childForceExpandHeight = true;
+        SetPreferredHeight(modeButtons, 64f);
+
+        m_RegisterModeButton = CreateButton(modeButtons.transform, "Register", () => SetMode(ProfileMode.Register));
+        m_SignInModeButton = CreateButton(modeButtons.transform, "Sign in", () => SetMode(ProfileMode.SignIn));
 
         m_NameInput = CreateInput(panel.transform, "Name", false);
         m_PhoneInput = CreateInput(panel.transform, "Phone number", false);
         m_EmailInput = CreateInput(panel.transform, "Email (optional)", false);
         m_PasswordInput = CreateInput(panel.transform, "Password", true);
 
-        GameObject buttons = CreateRect("Buttons", panel.transform, new Vector2(0f, 70f));
-        HorizontalLayoutGroup buttonLayout = buttons.AddComponent<HorizontalLayoutGroup>();
-        buttonLayout.spacing = 18;
-        buttonLayout.childControlWidth = true;
-        buttonLayout.childForceExpandWidth = true;
-        buttonLayout.childControlHeight = true;
-        buttonLayout.childForceExpandHeight = true;
-        SetPreferredHeight(buttons, 70f);
-
-        m_RegisterButton = CreateButton(buttons.transform, "Register", Register);
-        m_SignInButton = CreateButton(buttons.transform, "Sign in", SignIn);
+        m_RegisterButton = CreateButton(panel.transform, "Register", Register);
+        m_SignInButton = CreateButton(panel.transform, "Sign in", SignIn);
 
         m_StatusText = CreateText("Status", panel.transform, "", 24, TextAnchor.MiddleCenter);
         m_StatusText.color = new Color(0.86f, 0.9f, 0.96f, 1f);
         SetPreferredHeight(m_StatusText.gameObject, 96f);
+
+        SetMode(ProfileMode.Register);
+    }
+
+    void SetMode(ProfileMode mode)
+    {
+        m_Mode = mode;
+        bool registerMode = m_Mode == ProfileMode.Register;
+
+        if (m_TitleText != null)
+            m_TitleText.text = registerMode ? "Register player" : "Sign in";
+
+        if (m_NameInput != null)
+            m_NameInput.gameObject.SetActive(registerMode);
+        if (m_EmailInput != null)
+            m_EmailInput.gameObject.SetActive(registerMode);
+        if (m_RegisterButton != null)
+            m_RegisterButton.gameObject.SetActive(registerMode);
+        if (m_SignInButton != null)
+            m_SignInButton.gameObject.SetActive(!registerMode);
+
+        SetButtonSelected(m_RegisterModeButton, registerMode);
+        SetButtonSelected(m_SignInModeButton, !registerMode);
+        ResetStatus();
     }
 
     void Register()
@@ -182,17 +219,34 @@ public class PlayerRegistrationUI : MonoBehaviour
 
     void ResetStatus()
     {
+        if (m_StatusText == null)
+            return;
+
         if (SupabaseClient.instance != null && !SupabaseClient.instance.IsConfigured)
             SetStatus("Configure Assets/Resources/SupabaseConfig.json before registering.", true);
+        else if (m_Mode == ProfileMode.Register)
+            SetStatus("Create a new player profile.", false);
         else
-            SetStatus("Register with phone and password, or sign in if the player already exists.", false);
+            SetStatus("Sign in with an existing phone and password.", false);
     }
 
     void SetBusy(bool busy, string message)
     {
+        m_RegisterModeButton.interactable = !busy;
+        m_SignInModeButton.interactable = !busy;
         m_RegisterButton.interactable = !busy;
         m_SignInButton.interactable = !busy;
         SetStatus(message, false);
+    }
+
+    void SetButtonSelected(Button button, bool selected)
+    {
+        if (button == null || button.targetGraphic == null)
+            return;
+
+        Image image = button.targetGraphic as Image;
+        if (image != null)
+            image.color = selected ? new Color(0.2f, 0.45f, 0.95f, 1f) : new Color(0.18f, 0.22f, 0.28f, 1f);
     }
 
     void SetStatus(string message, bool isError)

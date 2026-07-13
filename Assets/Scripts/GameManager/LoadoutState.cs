@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +18,10 @@ public class LoadoutState : AState
     public Canvas inventoryCanvas;
 
     public GameObject backgrounddeletable;
+
+    [Header("Player Header UI")]
+    public Text playerNameDisplay;
+    public Text playerRankDisplay;
 
     [Header("Char UI")]
     public Text charNameDisplay;
@@ -138,12 +142,33 @@ public class LoadoutState : AState
 
     public void Refresh()
     {
-		PopulatePowerup();
+        RefreshPlayerHeader();
+
+        PopulatePowerup();
 
         StartCoroutine(PopulateCharacters());
         StartCoroutine(PopulateTheme());
     }
 
+    void RefreshPlayerHeader()
+    {
+        if (playerNameDisplay != null)
+            playerNameDisplay.text = GetPlayerDisplayName();
+
+        if (playerRankDisplay != null)
+            playerRankDisplay.text = "Rank " + (PlayerData.instance == null ? 0 : PlayerData.instance.rank);
+    }
+
+    string GetPlayerDisplayName()
+    {
+        if (SupabaseClient.instance != null && !string.IsNullOrEmpty(SupabaseClient.instance.DisplayName))
+            return SupabaseClient.instance.DisplayName;
+
+        if (PlayerData.instance != null && !string.IsNullOrEmpty(PlayerData.instance.previousName))
+            return PlayerData.instance.previousName;
+
+        return "Player";
+    }
     public override string GetName()
     {
         return "Loadout";
