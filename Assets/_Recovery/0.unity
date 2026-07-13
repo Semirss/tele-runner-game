@@ -6579,7 +6579,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &650610584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10310,7 +10310,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &965292400
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10377,7 +10377,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1245236425}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowRewardedAd
+        m_MethodName:
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14587,11 +14587,8 @@ MonoBehaviour:
   inventoryIcon: {fileID: 1312192090}
   gameOverPopup: {fileID: 1731455304}
   premiumForLifeButton: {fileID: 1784961613}
-  adsForLifeButton: {fileID: 965292399}
   premiumCurrencyOwned: {fileID: 560657058}
   PowerupIconPrefab: {fileID: 102596, guid: 94cb557246c11d14388842cc08be79a8, type: 3}
-  adsPlacementId: reviveVideo
-  adsRewarded: 1
 --- !u!1 &1245708846
 GameObject:
   m_ObjectHideFlags: 0

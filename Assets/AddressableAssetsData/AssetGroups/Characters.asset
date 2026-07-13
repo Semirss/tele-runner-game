@@ -15,11 +15,6 @@ MonoBehaviour:
   m_GroupName: Characters
   m_GUID: 0ee8914add8bf184eb2669a5f9b6f538
   m_SerializeEntries:
-  - m_GUID: 1c8b4e674120cad47a3fc249308e5af3
-    m_Address: Assets/Prefabs/UI/AddMissionButton.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2bfa18892388236498842bbfe7a3ff83
     m_Address: Assets/Prefabs/UI/Header.prefab
     m_ReadOnly: 0

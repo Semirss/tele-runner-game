@@ -41,7 +41,6 @@ Ads integrations
 ----------------
 
 Ads integration is using multiple placementID. That allow to define different behaviour per ads.
-If you look at the ads script (e.g. AdsForMission and GameState) you'll see it have a public field called adsPlacementId.
 (those value are set in editor to different value that the default rewardVideo)
 
 Now if you log into your Ads Dashboard in a browser and navigate to your project, click on a platform,

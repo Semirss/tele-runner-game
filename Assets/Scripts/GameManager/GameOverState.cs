@@ -6,7 +6,7 @@ using UnityEngine.Analytics;
 using System.Collections.Generic;
  
 /// <summary>
-/// state pushed on top of the GameManager when the player dies.
+/// State pushed on top of the GameManager when the player dies.
 /// </summary>
 public class GameOverState : AState
 {
@@ -14,10 +14,10 @@ public class GameOverState : AState
     public Canvas canvas;
     public MissionUI missionPopup;
 
-	public AudioClip gameOverTheme;
+    public AudioClip gameOverTheme;
 
-	public Leaderboard miniLeaderboard;
-	public Leaderboard fullLeaderboard;
+    public Leaderboard miniLeaderboard;
+    public Leaderboard fullLeaderboard;
 
     public GameObject addButton;
 
@@ -25,26 +25,33 @@ public class GameOverState : AState
     {
         canvas.gameObject.SetActive(true);
 
-		miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
-		
-		miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
-		miniLeaderboard.Populate();
+        string displayName = GetCurrentPlayerName();
+        if (miniLeaderboard.playerEntry.inputName != null)
+        {
+            miniLeaderboard.playerEntry.inputName.text = displayName;
+            miniLeaderboard.playerEntry.inputName.interactable = false;
+        }
+        if (miniLeaderboard.playerEntry.playerName != null)
+            miniLeaderboard.playerEntry.playerName.text = displayName;
+
+        miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
+        SubmitScoreAndPopulateLeaderboard();
 
         if (PlayerData.instance.AnyMissionComplete())
             StartCoroutine(missionPopup.Open());
         else
             missionPopup.gameObject.SetActive(false);
 
-		CreditCoins();
+        CreditCoins();
 
-		if (MusicPlayer.instance.GetStem(0) != gameOverTheme)
-		{
+        if (MusicPlayer.instance.GetStem(0) != gameOverTheme)
+        {
             MusicPlayer.instance.SetStem(0, gameOverTheme);
-			StartCoroutine(MusicPlayer.instance.RestartAllStems());
+            StartCoroutine(MusicPlayer.instance.RestartAllStems());
         }
     }
 
-	public override void Exit(AState to)
+    public override void Exit(AState to)
     {
         canvas.gameObject.SetActive(false);
         FinishRun();
@@ -57,20 +64,20 @@ public class GameOverState : AState
 
     public override void Tick()
     {
-        
     }
 
-	public void OpenLeaderboard()
-	{
-		fullLeaderboard.forcePlayerDisplay = false;
-		fullLeaderboard.displayPlayer = true;
-		fullLeaderboard.playerEntry.playerName.text = miniLeaderboard.playerEntry.inputName.text;
-		fullLeaderboard.playerEntry.score.text = trackManager.score.ToString();
+    public void OpenLeaderboard()
+    {
+        string displayName = GetCurrentPlayerName();
+        fullLeaderboard.forcePlayerDisplay = false;
+        fullLeaderboard.displayPlayer = true;
+        fullLeaderboard.playerEntry.playerName.text = displayName;
+        fullLeaderboard.playerEntry.score.text = trackManager.score.ToString();
 
-		fullLeaderboard.Open();
+        fullLeaderboard.Open();
     }
 
-	public void GoToStore()
+    public void GoToStore()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("shop", UnityEngine.SceneManagement.LoadSceneMode.Additive);
     }
@@ -79,7 +86,7 @@ public class GameOverState : AState
     public void GoToLoadout()
     {
         trackManager.isRerun = false;
-		manager.SwitchState("Loadout");
+        manager.SwitchState("Loadout");
     }
 
     public void RunAgain()
@@ -89,10 +96,10 @@ public class GameOverState : AState
     }
 
     protected void CreditCoins()
-	{
-		PlayerData.instance.Save();
+    {
+        PlayerData.instance.Save();
 
-#if UNITY_ANALYTICS // Using Analytics Standard Events v0.3.0
+#if UNITY_ANALYTICS
         var transactionId = System.Guid.NewGuid().ToString();
         var transactionContext = "gameplay";
         var level = PlayerData.instance.rank.ToString();
@@ -101,7 +108,7 @@ public class GameOverState : AState
         if (trackManager.characterController.coins > 0)
         {
             AnalyticsEvent.ItemAcquired(
-                AcquisitionType.Soft, // Currency type
+                AcquisitionType.Soft,
                 transactionContext,
                 trackManager.characterController.coins,
                 "fishbone",
@@ -115,7 +122,7 @@ public class GameOverState : AState
         if (trackManager.characterController.premium > 0)
         {
             AnalyticsEvent.ItemAcquired(
-                AcquisitionType.Premium, // Currency type
+                AcquisitionType.Premium,
                 transactionContext,
                 trackManager.characterController.premium,
                 "anchovies",
@@ -126,23 +133,18 @@ public class GameOverState : AState
             );
         }
 #endif 
-	}
+    }
 
-	protected void FinishRun()
+    protected void FinishRun()
     {
-		if(miniLeaderboard.playerEntry.inputName.text == "")
-		{
-			miniLeaderboard.playerEntry.inputName.text = "Add name";
-		}
-		else
-		{
-			PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
-		}
+        string displayName = GetCurrentPlayerName();
+        if (!string.IsNullOrEmpty(displayName))
+            PlayerData.instance.previousName = displayName;
 
-        PlayerData.instance.InsertScore(trackManager.score, miniLeaderboard.playerEntry.inputName.text );
+        if (SupabaseClient.instance == null || !SupabaseClient.instance.HasLocalPlayer)
+            PlayerData.instance.InsertScore(trackManager.score, displayName);
 
         CharacterCollider.DeathEvent de = trackManager.characterController.characterCollider.deathData;
-        //register data to analytics
 #if UNITY_ANALYTICS
         AnalyticsEvent.GameOver(null, new Dictionary<string, object> {
             { "coins", de.coins },
@@ -160,5 +162,30 @@ public class GameOverState : AState
         trackManager.End();
     }
 
-    //----------------
+    void SubmitScoreAndPopulateLeaderboard()
+    {
+        SupabaseClient client = SupabaseClient.instance;
+        if (client != null && client.HasLocalPlayer)
+        {
+            client.SubmitScore(trackManager.score, result =>
+            {
+                miniLeaderboard.Populate();
+            });
+        }
+        else
+        {
+            miniLeaderboard.Populate();
+        }
+    }
+
+    string GetCurrentPlayerName()
+    {
+        if (SupabaseClient.instance != null && !string.IsNullOrEmpty(SupabaseClient.instance.DisplayName))
+            return SupabaseClient.instance.DisplayName;
+
+        if (!string.IsNullOrEmpty(PlayerData.instance.previousName))
+            return PlayerData.instance.previousName;
+
+        return "Player";
+    }
 }

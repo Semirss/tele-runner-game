@@ -1,22 +1,21 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 /// <summary>
-/// This defines a "piece" of the track. This is attached to the prefab and contains data such as what obstacles can spawn on it.
-/// It also defines places on the track where obstacles can spawn. The prefab is placed into a ThemeData list.
+/// Defines a piece of the track and its obstacle path data.
 /// </summary>
 public class TrackSegment : MonoBehaviour
 {
     public Transform pathParent;
     public TrackManager manager;
 
-	public Transform objectRoot;
-	public Transform collectibleTransform;
+    public Transform objectRoot;
+    public Transform collectibleTransform;
 
-    public AssetReference[] possibleObstacles; 
+    public AssetReference[] possibleObstacles;
 
     [HideInInspector]
     public float[] obstaclePositions;
@@ -27,28 +26,38 @@ public class TrackSegment : MonoBehaviour
 
     void OnEnable()
     {
+        if (!HasValidPath())
+        {
+            enabled = false;
+            return;
+        }
+
         UpdateWorldLength();
 
-		GameObject obj = new GameObject("ObjectRoot");
-		obj.transform.SetParent(transform);
-		objectRoot = obj.transform;
+        GameObject obj = new GameObject("ObjectRoot");
+        obj.transform.SetParent(transform);
+        objectRoot = obj.transform;
 
-		obj = new GameObject("Collectibles");
-		obj.transform.SetParent(objectRoot);
-		collectibleTransform = obj.transform;
+        obj = new GameObject("Collectibles");
+        obj.transform.SetParent(objectRoot);
+        collectibleTransform = obj.transform;
     }
 
-    // Same as GetPointAt but using an interpolation parameter in world units instead of 0 to 1.
     public void GetPointAtInWorldUnit(float wt, out Vector3 pos, out Quaternion rot)
     {
-        float t = wt / m_WorldLength;
+        float t = m_WorldLength <= 0f ? 0f : wt / m_WorldLength;
         GetPointAt(t, out pos, out rot);
     }
 
-
-	// Interpolation parameter t is clamped between 0 and 1.
-	public void GetPointAt(float t, out Vector3 pos, out Quaternion rot)
+    public void GetPointAt(float t, out Vector3 pos, out Quaternion rot)
     {
+        if (!HasValidPath())
+        {
+            pos = transform.position;
+            rot = transform.rotation;
+            return;
+        }
+
         float clampedT = Mathf.Clamp01(t);
         float scaledT = (pathParent.childCount - 1) * clampedT;
         int index = Mathf.FloorToInt(scaledT);
@@ -71,6 +80,8 @@ public class TrackSegment : MonoBehaviour
     protected void UpdateWorldLength()
     {
         m_WorldLength = 0;
+        if (!HasValidPath())
+            return;
 
         for (int i = 1; i < pathParent.childCount; ++i)
         {
@@ -82,22 +93,27 @@ public class TrackSegment : MonoBehaviour
         }
     }
 
-	public void Cleanup()
-	{
-		while(collectibleTransform.childCount > 0)
-		{
-			Transform t = collectibleTransform.GetChild(0);
-			t.SetParent(null);
-            Coin.coinPool.Free(t.gameObject);
-		}
+    bool HasValidPath()
+    {
+        return pathParent != null && pathParent.childCount > 0;
+    }
 
-	    Addressables.ReleaseInstance(gameObject);
-	}
+    public void Cleanup()
+    {
+        while (collectibleTransform.childCount > 0)
+        {
+            Transform t = collectibleTransform.GetChild(0);
+            t.SetParent(null);
+            Coin.coinPool.Free(t.gameObject);
+        }
+
+        Addressables.ReleaseInstance(gameObject);
+    }
 
 #if UNITY_EDITOR
     void OnDrawGizmos()
     {
-        if (pathParent == null)
+        if (!HasValidPath())
             return;
 
         Color c = Gizmos.color;
@@ -111,12 +127,15 @@ public class TrackSegment : MonoBehaviour
         }
 
         Gizmos.color = Color.blue;
-        for (int i = 0; i < obstaclePositions.Length; ++i)
+        if (obstaclePositions != null)
         {
-            Vector3 pos;
-            Quaternion rot;
-            GetPointAt(obstaclePositions[i], out pos, out rot);
-            Gizmos.DrawSphere(pos, 0.5f);
+            for (int i = 0; i < obstaclePositions.Length; ++i)
+            {
+                Vector3 pos;
+                Quaternion rot;
+                GetPointAt(obstaclePositions[i], out pos, out rot);
+                Gizmos.DrawSphere(pos, 0.5f);
+            }
         }
 
         Gizmos.color = c;
@@ -140,9 +159,7 @@ class TrackSegmentEditor : Editor
         base.OnInspectorGUI();
 
         if (GUILayout.Button("Add obstacles"))
-        {
             ArrayUtility.Add(ref m_Segment.obstaclePositions, 0.0f);
-        }
 
         if (m_Segment.obstaclePositions != null)
         {
@@ -161,5 +178,4 @@ class TrackSegmentEditor : Editor
         }
     }
 }
-
 #endif
