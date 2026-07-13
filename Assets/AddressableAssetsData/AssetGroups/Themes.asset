@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: Themes
   m_EditorClassIdentifier: 
   m_GroupName: Themes
-  m_Data:
-    m_SerializedData: []
   m_GUID: 39cca0338cf24d84983f02f76cd584ea
   m_SerializeEntries:
   - m_GUID: 0d80a5ee0a199154784a904ed88da003
@@ -22,11 +20,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - themeData
-  - m_GUID: ca6db81f67984284191d6a142204de55
-    m_Address: themeData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - themeData
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:

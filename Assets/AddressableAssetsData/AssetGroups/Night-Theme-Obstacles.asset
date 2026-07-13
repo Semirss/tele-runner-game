@@ -13,38 +13,8 @@ MonoBehaviour:
   m_Name: Night-Theme-Obstacles
   m_EditorClassIdentifier: 
   m_GroupName: Night-Theme-Obstacles
-  m_Data:
-    m_SerializedData: []
   m_GUID: ecca703ac90113346a3923a505db5daa
-  m_SerializeEntries:
-  - m_GUID: 35231d694d6c0ae4da2714b8969719cd
-    m_Address: ObstacleRat
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 39c9e0746ca1a4b4995befba3266d4f6
-    m_Address: ObstacleRoadworksCone
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 61bb777a99260874f88fe72c93801af9
-    m_Address: ObstacleHighBarrier
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6789d11662a4a2d4b86aac2f6082e0a0
-    m_Address: ObstacleWheelyBin
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9be026198609a494aae8cec4aba2c813
-    m_Address: ObstacleRoadworksBarrier
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a9b51c81c20d09b49a078e5821bb9d58
-    m_Address: ObstacleLowBarrier
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e4530c9317086c24e956c8e653d7cfc1
-    m_Address: ObstacleBin
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:

@@ -13,22 +13,8 @@ MonoBehaviour:
   m_Name: Night-Zones
   m_EditorClassIdentifier: 
   m_GroupName: Night-Zones
-  m_Data:
-    m_SerializedData: []
   m_GUID: 42bc777f296585a479930a4d8fb16c27
-  m_SerializeEntries:
-  - m_GUID: 6e95a44ed61efbd4392399e1718efb18
-    m_Address: Assets/Bundles/Themes/NightTime/Industrial
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9ad69e82a3b8b0544ae28ced5a8d7dfe
-    m_Address: Assets/Bundles/Themes/NightTime/Urban
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e0111592503a61a4ca2df256d083d305
-    m_Address: Assets/Bundles/Themes/NightTime/Suburbs
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:
