@@ -41,6 +41,7 @@ public class PatrollingObstacle : Obstacle
 	        yield break;
 	    }
         GameObject obj = op.Result as GameObject;
+        segment.TrackAddressableInstance(obj);
 
         obj.transform.SetParent(segment.objectRoot, true);
 
@@ -103,3 +104,4 @@ public class PatrollingObstacle : Obstacle
         transform.localPosition = m_OriginalPosition - transform.right * Mathf.PingPong(m_CurrentPos, m_Segement.manager.laneOffset * k_LaneOffsetToFullWidth);
 	}
 }
+

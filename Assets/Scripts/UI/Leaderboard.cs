@@ -15,6 +15,16 @@ public class Leaderboard : MonoBehaviour
     readonly List<HighscoreUI> m_SpawnedRows = new List<HighscoreUI>();
     int m_RequestId;
 
+    void Awake()
+    {
+        HideAllRows();
+    }
+
+    void OnEnable()
+    {
+        HideAllRows();
+    }
+
     public void Open()
     {
         gameObject.SetActive(true);
@@ -154,3 +164,4 @@ public class Leaderboard : MonoBehaviour
             playerEntry.gameObject.SetActive(false);
     }
 }
+

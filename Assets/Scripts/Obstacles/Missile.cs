@@ -46,6 +46,7 @@ public class Missile : Obstacle
 	        yield break;
 	    }
         GameObject obj = op.Result as GameObject;
+        segment.TrackAddressableInstance(obj);
 
         obj.transform.SetParent(segment.objectRoot, true);
         obj.transform.position += obj.transform.right * lane * segment.manager.laneOffset;
@@ -107,3 +108,4 @@ public class Missile : Obstacle
 		}
 	}
 }
+

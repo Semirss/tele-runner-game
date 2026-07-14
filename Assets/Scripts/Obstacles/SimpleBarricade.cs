@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement;
@@ -33,6 +33,7 @@ public class SimpleBarricade : Obstacle
                 yield break;
             }
             GameObject obj = op.Result as GameObject;
+            segment.TrackAddressableInstance(obj);
 
             if (obj == null)
                 Debug.Log(gameObject.name);
@@ -50,3 +51,4 @@ public class SimpleBarricade : Obstacle
         }
     }
 }
+

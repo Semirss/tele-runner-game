@@ -23,28 +23,26 @@ public class GameOverState : AState
 
     public override void Enter(AState from)
     {
-        canvas.gameObject.SetActive(true);
+        if (canvas != null)
+            canvas.gameObject.SetActive(true);
 
         string displayName = GetCurrentPlayerName();
-        if (miniLeaderboard.playerEntry.inputName != null)
-        {
-            miniLeaderboard.playerEntry.inputName.text = displayName;
-            miniLeaderboard.playerEntry.inputName.interactable = false;
-        }
-        if (miniLeaderboard.playerEntry.playerName != null)
-            miniLeaderboard.playerEntry.playerName.text = displayName;
+        int finalScore = trackManager == null ? 0 : trackManager.score;
 
-        miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
+        ApplyPlayerEntry(miniLeaderboard, displayName, finalScore);
         SubmitScoreAndPopulateLeaderboard();
 
-        if (PlayerData.instance.AnyMissionComplete())
-            StartCoroutine(missionPopup.Open());
-        else
-            missionPopup.gameObject.SetActive(false);
+        if (missionPopup != null)
+        {
+            if (PlayerData.instance != null && PlayerData.instance.AnyMissionComplete())
+                StartCoroutine(missionPopup.Open());
+            else
+                missionPopup.gameObject.SetActive(false);
+        }
 
         CreditCoins();
 
-        if (MusicPlayer.instance.GetStem(0) != gameOverTheme)
+        if (MusicPlayer.instance != null && MusicPlayer.instance.GetStem(0) != gameOverTheme)
         {
             MusicPlayer.instance.SetStem(0, gameOverTheme);
             StartCoroutine(MusicPlayer.instance.RestartAllStems());
@@ -53,7 +51,17 @@ public class GameOverState : AState
 
     public override void Exit(AState to)
     {
-        canvas.gameObject.SetActive(false);
+        StopAllCoroutines();
+
+        if (miniLeaderboard != null)
+            miniLeaderboard.gameObject.SetActive(false);
+        if (fullLeaderboard != null)
+            fullLeaderboard.gameObject.SetActive(false);
+        if (missionPopup != null)
+            missionPopup.gameObject.SetActive(false);
+        if (canvas != null)
+            canvas.gameObject.SetActive(false);
+
         FinishRun();
     }
 
@@ -68,12 +76,15 @@ public class GameOverState : AState
 
     public void OpenLeaderboard()
     {
+        if (fullLeaderboard == null)
+            return;
+
         string displayName = GetCurrentPlayerName();
+        int finalScore = trackManager == null ? 0 : trackManager.score;
+
         fullLeaderboard.forcePlayerDisplay = false;
         fullLeaderboard.displayPlayer = true;
-        fullLeaderboard.playerEntry.playerName.text = displayName;
-        fullLeaderboard.playerEntry.score.text = trackManager.score.ToString();
-
+        ApplyPlayerEntry(fullLeaderboard, displayName, finalScore);
         fullLeaderboard.Open();
     }
 
@@ -85,21 +96,29 @@ public class GameOverState : AState
 
     public void GoToLoadout()
     {
-        trackManager.isRerun = false;
+        if (trackManager != null)
+            trackManager.isRerun = false;
         manager.SwitchState("Loadout");
     }
 
     public void RunAgain()
     {
-        trackManager.isRerun = false;
+        if (trackManager != null)
+            trackManager.isRerun = false;
         manager.SwitchState("Game");
     }
 
     protected void CreditCoins()
     {
+        if (PlayerData.instance == null)
+            return;
+
         PlayerData.instance.Save();
 
 #if UNITY_ANALYTICS
+        if (trackManager == null || trackManager.characterController == null)
+            return;
+
         var transactionId = System.Guid.NewGuid().ToString();
         var transactionContext = "gameplay";
         var level = PlayerData.instance.rank.ToString();
@@ -137,45 +156,72 @@ public class GameOverState : AState
 
     protected void FinishRun()
     {
+        if (PlayerData.instance == null)
+            return;
+
         string displayName = GetCurrentPlayerName();
         if (!string.IsNullOrEmpty(displayName))
             PlayerData.instance.previousName = displayName;
 
-        if (SupabaseClient.instance == null || !SupabaseClient.instance.HasLocalPlayer)
+        if (trackManager != null && (SupabaseClient.instance == null || !SupabaseClient.instance.HasLocalPlayer))
             PlayerData.instance.InsertScore(trackManager.score, displayName);
 
-        CharacterCollider.DeathEvent de = trackManager.characterController.characterCollider.deathData;
 #if UNITY_ANALYTICS
-        AnalyticsEvent.GameOver(null, new Dictionary<string, object> {
-            { "coins", de.coins },
-            { "premium", de.premium },
-            { "score", de.score },
-            { "distance", de.worldDistance },
-            { "obstacle",  de.obstacleType },
-            { "theme", de.themeUsed },
-            { "character", de.character },
-        });
+        if (trackManager != null && trackManager.characterController != null && trackManager.characterController.characterCollider != null)
+        {
+            CharacterCollider.DeathEvent de = trackManager.characterController.characterCollider.deathData;
+            AnalyticsEvent.GameOver(null, new Dictionary<string, object> {
+                { "coins", de.coins },
+                { "premium", de.premium },
+                { "score", de.score },
+                { "distance", de.worldDistance },
+                { "obstacle",  de.obstacleType },
+                { "theme", de.themeUsed },
+                { "character", de.character },
+            });
+        }
 #endif
 
         PlayerData.instance.Save();
 
-        trackManager.End();
+        if (trackManager != null)
+            trackManager.End();
     }
 
     void SubmitScoreAndPopulateLeaderboard()
     {
         SupabaseClient client = SupabaseClient.instance;
+        int finalScore = trackManager == null ? 0 : trackManager.score;
+
+        if (miniLeaderboard != null)
+            miniLeaderboard.Populate();
+
         if (client != null && client.HasLocalPlayer)
         {
-            client.SubmitScore(trackManager.score, result =>
+            client.SubmitScore(finalScore, result =>
             {
-                miniLeaderboard.Populate();
+                if (miniLeaderboard != null)
+                    miniLeaderboard.Populate();
             });
         }
-        else
+    }
+
+    void ApplyPlayerEntry(Leaderboard leaderboard, string displayName, int score)
+    {
+        if (leaderboard == null || leaderboard.playerEntry == null)
+            return;
+
+        if (leaderboard.playerEntry.inputName != null)
         {
-            miniLeaderboard.Populate();
+            leaderboard.playerEntry.inputName.text = displayName;
+            leaderboard.playerEntry.inputName.interactable = false;
         }
+
+        if (leaderboard.playerEntry.playerName != null)
+            leaderboard.playerEntry.playerName.text = displayName;
+
+        if (leaderboard.playerEntry.score != null)
+            leaderboard.playerEntry.score.text = score.ToString();
     }
 
     string GetCurrentPlayerName()
@@ -183,7 +229,7 @@ public class GameOverState : AState
         if (SupabaseClient.instance != null && !string.IsNullOrEmpty(SupabaseClient.instance.DisplayName))
             return SupabaseClient.instance.DisplayName;
 
-        if (!string.IsNullOrEmpty(PlayerData.instance.previousName))
+        if (PlayerData.instance != null && !string.IsNullOrEmpty(PlayerData.instance.previousName))
             return PlayerData.instance.previousName;
 
         return "Player";

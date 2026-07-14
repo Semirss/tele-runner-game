@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,9 +24,14 @@ public class TrackSegment : MonoBehaviour
     public float worldLength { get { return m_WorldLength; } }
 
     protected float m_WorldLength;
+    readonly List<GameObject> m_AddressableInstances = new List<GameObject>();
+    bool m_CleanedUp;
 
     void OnEnable()
     {
+        m_CleanedUp = false;
+        m_AddressableInstances.Clear();
+
         if (!HasValidPath())
         {
             enabled = false;
@@ -98,16 +104,48 @@ public class TrackSegment : MonoBehaviour
         return pathParent != null && pathParent.childCount > 0;
     }
 
+    public void TrackAddressableInstance(GameObject instance)
+    {
+        if (instance != null && instance != gameObject && !m_AddressableInstances.Contains(instance))
+            m_AddressableInstances.Add(instance);
+    }
+
+    public void UntrackAddressableInstance(GameObject instance)
+    {
+        if (instance != null)
+            m_AddressableInstances.Remove(instance);
+    }
+
     public void Cleanup()
     {
-        while (collectibleTransform.childCount > 0)
+        if (m_CleanedUp)
+            return;
+
+        m_CleanedUp = true;
+
+        for (int i = m_AddressableInstances.Count - 1; i >= 0; --i)
         {
-            Transform t = collectibleTransform.GetChild(0);
-            t.SetParent(null);
-            Coin.coinPool.Free(t.gameObject);
+            GameObject instance = m_AddressableInstances[i];
+            if (instance != null)
+                Addressables.ReleaseInstance(instance);
+        }
+        m_AddressableInstances.Clear();
+
+        if (collectibleTransform != null)
+        {
+            while (collectibleTransform.childCount > 0)
+            {
+                Transform t = collectibleTransform.GetChild(0);
+                t.SetParent(null);
+                if (Coin.coinPool != null)
+                    Coin.coinPool.Free(t.gameObject);
+                else
+                    Destroy(t.gameObject);
+            }
         }
 
-        Addressables.ReleaseInstance(gameObject);
+        if (!Addressables.ReleaseInstance(gameObject))
+            Destroy(gameObject);
     }
 
 #if UNITY_EDITOR
@@ -179,3 +217,5 @@ class TrackSegmentEditor : Editor
     }
 }
 #endif
+
+

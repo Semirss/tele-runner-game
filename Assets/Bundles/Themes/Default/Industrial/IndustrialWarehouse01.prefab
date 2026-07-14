@@ -254,11 +254,6 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  - m_AssetGUID: f0070c0f7d7cdcb4eb7176be4a87caa9
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
   obstaclePositions:
   - 0.5
 --- !u!1 &1000011283875314

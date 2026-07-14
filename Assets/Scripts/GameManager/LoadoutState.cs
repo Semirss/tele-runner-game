@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -412,7 +412,6 @@ public class LoadoutState : AState
 	{
 		m_CurrentModifier = modifier;
 	}
-
     public void StartGame()
     {
         if (PlayerData.instance.ftueLevel == 1)
@@ -420,7 +419,14 @@ public class LoadoutState : AState
             PlayerData.instance.ftueLevel = 2;
             PlayerData.instance.Save();
         }
-        backgrounddeletable.SetActive(false);
+
+        if (backgrounddeletable != null)
+            backgrounddeletable.SetActive(false);
+
+        GameState gameState = manager.FindState("Game") as GameState;
+        if (gameState != null)
+            gameState.HideGameOverUI();
+
         manager.SwitchState("Game");
     }
 

@@ -19,6 +19,7 @@ public class AllLaneObstacle: Obstacle
 	        yield break;
 	    }
         GameObject obj = op.Result as GameObject;
+        segment.TrackAddressableInstance(obj);
         obj.transform.SetParent(segment.objectRoot, true);
 
         //TODO : remove that hack related to #issue7
@@ -27,3 +28,4 @@ public class AllLaneObstacle: Obstacle
         obj.transform.position = oldPos;
     }
 }
+

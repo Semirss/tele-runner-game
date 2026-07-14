@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
@@ -19,6 +19,7 @@ public class CharacterInputController : MonoBehaviour
 	public CharacterCollider characterCollider;
 	public GameObject blobShadow;
 	public float laneChangeSpeed = 1.0f;
+    public float rideSurfaceVerticalSpeed = 8.0f;
 
 	public int maxLife = 3;
 
@@ -30,6 +31,8 @@ public class CharacterInputController : MonoBehaviour
 	public List<Consumable> consumables { get { return m_ActiveConsumables; } }
 	public bool isJumping { get { return m_Jumping; } }
 	public bool isSliding { get { return m_Sliding; } }
+    public int currentLane { get { return m_CurrentLane; } }
+    public bool isOnRideSurface { get { return m_OnRideSurface; } }
 
 	[Header("Controls")]
 	public float jumpLength = 2.0f;     // Distance jumped
@@ -64,6 +67,10 @@ public class CharacterInputController : MonoBehaviour
 
     protected int m_CurrentLane = k_StartingLane;
     protected Vector3 m_TargetPosition = Vector3.zero;
+    protected bool m_OnRideSurface;
+    protected float m_RideSurfaceHeight;
+    protected float m_RideSurfaceEndDistance;
+    protected BusRideSurface m_CurrentRideSurface;
 
     protected readonly Vector3 k_StartingPosition = Vector3.forward * 2f;
 
@@ -110,6 +117,10 @@ public class CharacterInputController : MonoBehaviour
 
 		m_CurrentLane = k_StartingLane;
 		characterCollider.transform.localPosition = Vector3.zero;
+        m_OnRideSurface = false;
+        m_RideSurfaceHeight = 0.0f;
+        m_RideSurfaceEndDistance = 0.0f;
+        m_CurrentRideSurface = null;
 
         currentLife = maxLife;
 
@@ -298,7 +309,13 @@ public class CharacterInputController : MonoBehaviour
             }
         }
 
+        if (m_OnRideSurface && trackManager.worldDistance >= m_RideSurfaceEndDistance)
+        {
+            EndRideSurface();
+        }
+
         Vector3 verticalTargetPosition = m_TargetPosition;
+        verticalTargetPosition.y = m_OnRideSurface ? m_RideSurfaceHeight : 0.0f;
 
 		if (m_Sliding)
 		{
@@ -328,7 +345,8 @@ public class CharacterInputController : MonoBehaviour
 				}
 				else
 				{
-					verticalTargetPosition.y = Mathf.Sin(ratio * Mathf.PI) * jumpHeight;
+					float baseHeight = m_OnRideSurface ? m_RideSurfaceHeight : 0.0f;
+					verticalTargetPosition.y = baseHeight + Mathf.Sin(ratio * Mathf.PI) * jumpHeight;
 				}
 			}
 			else if(!AudioListener.pause)//use AudioListener.pause as it is an easily accessible singleton & it is set when the app is in pause too
@@ -342,7 +360,14 @@ public class CharacterInputController : MonoBehaviour
 			}
         }
 
-        characterCollider.transform.localPosition = Vector3.MoveTowards(characterCollider.transform.localPosition, verticalTargetPosition, laneChangeSpeed * Time.deltaTime);
+        Vector3 currentLocalPosition = characterCollider.transform.localPosition;
+        float horizontalStep = laneChangeSpeed * Time.deltaTime;
+        float verticalStep = (m_OnRideSurface ? Mathf.Max(laneChangeSpeed, rideSurfaceVerticalSpeed) : laneChangeSpeed) * Time.deltaTime;
+
+        currentLocalPosition.x = Mathf.MoveTowards(currentLocalPosition.x, verticalTargetPosition.x, horizontalStep);
+        currentLocalPosition.y = Mathf.MoveTowards(currentLocalPosition.y, verticalTargetPosition.y, verticalStep);
+        currentLocalPosition.z = Mathf.MoveTowards(currentLocalPosition.z, verticalTargetPosition.z, horizontalStep);
+        characterCollider.transform.localPosition = currentLocalPosition;
 
         // Put blob shadow under the character.
         RaycastHit hit;
@@ -422,6 +447,42 @@ public class CharacterInputController : MonoBehaviour
 			characterCollider.Slide(false);
 		}
 	}
+    public void BeginRideSurface(float rideHeight, float rideDistance)
+    {
+        BeginRideSurface(null, rideHeight, rideDistance);
+    }
+
+    public void BeginRideSurface(BusRideSurface surface, float rideHeight, float rideDistance)
+    {
+        m_OnRideSurface = true;
+        m_CurrentRideSurface = surface;
+        m_RideSurfaceHeight = Mathf.Max(0.0f, rideHeight);
+
+        float endDistance = trackManager.worldDistance + Mathf.Max(0.1f, rideDistance);
+        m_RideSurfaceEndDistance = Mathf.Max(m_RideSurfaceEndDistance, endDistance);
+
+        StopJumping();
+        StopSliding();
+        m_TargetPosition.y = m_RideSurfaceHeight;
+    }
+
+    public void EndRideSurface()
+    {
+        if (!m_OnRideSurface)
+            return;
+
+        m_OnRideSurface = false;
+        m_CurrentRideSurface = null;
+        m_RideSurfaceHeight = 0.0f;
+        m_RideSurfaceEndDistance = 0.0f;
+        m_TargetPosition.y = 0.0f;
+    }
+
+    public void ForceLane(int lane)
+    {
+        m_CurrentLane = Mathf.Clamp(lane, 0, 2);
+        m_TargetPosition.x = (m_CurrentLane - 1) * trackManager.laneOffset;
+    }
 
 	public void ChangeLane(int direction)
     {
@@ -434,10 +495,8 @@ public class CharacterInputController : MonoBehaviour
             // Ignore, we are on the borders.
             return;
 
-        m_CurrentLane = targetLane;
-        m_TargetPosition = new Vector3((m_CurrentLane - 1) * trackManager.laneOffset, 0, 0);
+        ForceLane(targetLane);
     }
-
     public void UseInventory()
     {
         if(inventory != null && inventory.CanBeUsed(this))
@@ -449,6 +508,13 @@ public class CharacterInputController : MonoBehaviour
 
     public void UseConsumable(Consumable c)
     {
+        if (c == null)
+            return;
+
+        TrackSegment owningSegment = c.GetComponentInParent<TrackSegment>();
+        if (owningSegment != null)
+            owningSegment.UntrackAddressableInstance(c.gameObject);
+
 		characterCollider.audio.PlayOneShot(powerUpUseSound);
 
         for(int i = 0; i < m_ActiveConsumables.Count; ++i)
@@ -470,3 +536,4 @@ public class CharacterInputController : MonoBehaviour
         StartCoroutine(c.Started(this));
     }
 }
+

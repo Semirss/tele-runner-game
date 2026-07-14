@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,17 +75,30 @@ public class GameState : AState
 
     public override void Exit(AState to)
     {
-        canvas.gameObject.SetActive(false);
+        StopAllCoroutines();
+        HideGameOverUI();
+
+        if (pauseMenu != null)
+            pauseMenu.gameObject.SetActive(false);
+        if (wholeUI != null)
+            wholeUI.gameObject.SetActive(false);
+        if (canvas != null)
+            canvas.gameObject.SetActive(false);
+
         ClearPowerup();
     }
 
     public void StartGame()
     {
-        canvas.gameObject.SetActive(true);
-        pauseMenu.gameObject.SetActive(false);
-        wholeUI.gameObject.SetActive(true);
-        pauseButton.gameObject.SetActive(true);
-        gameOverPopup.SetActive(false);
+        if (canvas != null)
+            canvas.gameObject.SetActive(true);
+        if (pauseMenu != null)
+            pauseMenu.gameObject.SetActive(false);
+        if (wholeUI != null)
+            wholeUI.gameObject.SetActive(true);
+        if (pauseButton != null)
+            pauseButton.gameObject.SetActive(true);
+        HideGameOverUI();
 
         if (!trackManager.isRerun)
         {
@@ -247,7 +260,7 @@ public class GameState : AState
         if (!trackManager.isLoaded)
         {
             countdownText.gameObject.SetActive(true);
-            countdownText.text = "Loading...";
+            countdownText.text = trackManager.loadFailed ? "Load failed\nCheck Console" : "Loading...";
             m_CountdownRectTransform.localScale = Vector3.one;
         }
         else if (trackManager.timeToStart >= 0)
@@ -280,6 +293,10 @@ public class GameState : AState
         Shader.SetGlobalFloat("_BlinkingValue", 0.0f);
 
         yield return new WaitForSeconds(2.0f);
+
+        if (manager == null || manager.topState != this)
+            yield break;
+
         if (currentModifier.OnRunEnd(this))
         {
             if (trackManager.isRerun)
@@ -305,16 +322,26 @@ public class GameState : AState
 
     public void OpenGameOverPopup()
     {
-        premiumForLifeButton.interactable = PlayerData.instance.premium >= 3;
-        premiumCurrencyOwned.text = PlayerData.instance.premium.ToString();
+        if (premiumForLifeButton != null)
+            premiumForLifeButton.interactable = PlayerData.instance.premium >= 3;
+        if (premiumCurrencyOwned != null)
+            premiumCurrencyOwned.text = PlayerData.instance.premium.ToString();
 
         ClearPowerup();
 
-        gameOverPopup.SetActive(true);
+        if (gameOverPopup != null)
+            gameOverPopup.SetActive(true);
+    }
+
+    public void HideGameOverUI()
+    {
+        if (gameOverPopup != null)
+            gameOverPopup.SetActive(false);
     }
 
     public void GameOver()
     {
+        HideGameOverUI();
         manager.SwitchState("GameOver");
     }
 
@@ -338,3 +365,4 @@ public class GameState : AState
         StartGame();
     }
 }
+

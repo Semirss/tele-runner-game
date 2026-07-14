@@ -1,16 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Analytics;
 using UnityEngine.ResourceManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using GameObject = UnityEngine.GameObject;
-
-#if UNITY_ANALYTICS
-using UnityEngine.Analytics;
-#endif
 
 /// <summary>
 /// The TrackManager handles creating track segments, moving them and handling the whole pace of the game.
@@ -47,6 +41,12 @@ public class TrackManager : MonoBehaviour
 
     public bool invincible = false;
 
+    [Header("Bike Lane Powerup")]
+    [Tooltip("0 = left, 1 = middle, 2 = right.")]
+    public int bikeLaneIndex = 2;
+    [Tooltip("Multiplier applied to track speed while the bike lane powerup is active.")]
+    public float bikeLaneSpeedMultiplier = 1.65f;
+
     [Header("Objects")]
     public ConsumableDatabase consumableDatabase;
     public MeshFilter skyMeshFilter;
@@ -67,8 +67,8 @@ public class TrackManager : MonoBehaviour
     public int multiplier { get { return m_Multiplier; } }
     public float currentSegmentDistance { get { return m_CurrentSegmentDistance; } }
     public float worldDistance { get { return m_TotalWorldDistance; } }
-    public float speed { get { return m_Speed; } }
-    public float speedRatio { get { return (m_Speed - minSpeed) / (maxSpeed - minSpeed); } }
+    public float speed { get { return m_BikeLaneActive ? m_Speed * m_ActiveBikeLaneSpeedMultiplier : m_Speed; } }
+    public float speedRatio { get { return Mathf.Clamp01((speed - minSpeed) / Mathf.Max(0.01f, maxSpeed - minSpeed)); } }
     public int currentZone { get { return m_CurrentZone; } }
 
     public TrackSegment currentSegment { get { return m_Segments[0]; } }
@@ -78,6 +78,9 @@ public class TrackManager : MonoBehaviour
     public bool isMoving { get { return m_IsMoving; } }
     public bool isRerun { get { return m_Rerun; } set { m_Rerun = value; } }
     public bool isLoaded { get; set; }
+    public bool loadFailed { get; private set; }
+    public string loadError { get; private set; }
+    public bool bikeLaneActive { get { return m_BikeLaneActive; } }
 
 
     protected float m_TimeToStart = -1.0f;
@@ -90,6 +93,9 @@ public class TrackManager : MonoBehaviour
     protected float m_TotalWorldDistance;
     protected bool m_IsMoving;
     protected float m_Speed;
+    protected bool m_BikeLaneActive;
+    protected int m_ActiveBikeLaneIndex = 1;
+    protected float m_ActiveBikeLaneSpeedMultiplier = 1.0f;
 
     protected float m_TimeSincePowerup;     // The higher it goes, the higher the chance of spawning one
     protected float m_TimeSinceLastPremium;
@@ -108,6 +114,8 @@ public class TrackManager : MonoBehaviour
     protected int m_Score;
     protected float m_ScoreAccum;
     protected bool m_Rerun;     // This lets us know if we are entering a game over (ads) state or starting a new game (see GameState)
+    protected int m_SegmentSpawnFailures;
+    protected float m_NextSegmentSpawnRetryTime;
 
 
     
@@ -123,6 +131,9 @@ public class TrackManager : MonoBehaviour
     protected const int k_DesiredSegmentCount = 10;
     protected const float k_SegmentRemovalDistance = -30f;
     protected const float k_Acceleration = 0.2f;
+    protected const int k_MaxSegmentSpawnFailures = 25;
+    protected const float k_FailedSegmentRetryDelay = 0.25f;
+    protected const float k_InitialSegmentLoadTimeout = 15.0f;
     
     protected void Awake()
     {
@@ -135,12 +146,33 @@ public class TrackManager : MonoBehaviour
         characterController.StartMoving();
         m_IsMoving = true;
         if (isRestart)
+        {
             m_Speed = minSpeed;
+            EndBikeLane();
+        }
     }
 
     public void StopMove()
     {
         m_IsMoving = false;
+    }
+
+    public void BeginBikeLane(int laneIndex, float speedMultiplier)
+    {
+        m_BikeLaneActive = true;
+        m_ActiveBikeLaneIndex = Mathf.Clamp(laneIndex, 0, 2);
+        m_ActiveBikeLaneSpeedMultiplier = Mathf.Max(1.0f, speedMultiplier);
+
+        if (characterController != null)
+        {
+            characterController.ForceLane(m_ActiveBikeLaneIndex);
+        }
+    }
+
+    public void EndBikeLane()
+    {
+        m_BikeLaneActive = false;
+        m_ActiveBikeLaneSpeedMultiplier = 1.0f;
     }
 
     IEnumerator WaitToStart()
@@ -170,10 +202,24 @@ public class TrackManager : MonoBehaviour
     public IEnumerator Begin()
     {
         isLoaded = false;
+        loadFailed = false;
+        loadError = string.Empty;
+        m_SegmentSpawnFailures = 0;
+        m_NextSegmentSpawnRetryTime = 0.0f;
 
         if (!m_Rerun)
         {
-            m_CameraOriginalPos = Camera.main.transform.position;
+            if (Camera.main != null)
+                m_CameraOriginalPos = Camera.main.transform.position;
+
+            if (PlayerData.instance == null || PlayerData.instance.characters == null || PlayerData.instance.characters.Count == 0 || PlayerData.instance.themes == null || PlayerData.instance.themes.Count == 0)
+            {
+                FailLoad("PlayerData is missing character or theme data.");
+                yield break;
+            }
+
+            PlayerData.instance.usedCharacter = Mathf.Clamp(PlayerData.instance.usedCharacter, 0, PlayerData.instance.characters.Count - 1);
+            PlayerData.instance.usedTheme = Mathf.Clamp(PlayerData.instance.usedTheme, 0, PlayerData.instance.themes.Count - 1);
             
             if (m_TrackSeed != -1)
                 Random.InitState(m_TrackSeed);
@@ -215,7 +261,8 @@ public class TrackManager : MonoBehaviour
             m_CurrentZone = 0;
             m_CurrentZoneDistance = 0;
 
-            skyMeshFilter.sharedMesh = m_CurrentThemeData.skyMesh;
+            if (skyMeshFilter != null)
+                skyMeshFilter.sharedMesh = m_CurrentThemeData.skyMesh;
             RenderSettings.fogColor = m_CurrentThemeData.fogColor;
             RenderSettings.fog = true;
 
@@ -245,9 +292,17 @@ public class TrackManager : MonoBehaviour
 
         characterController.Begin();
 
-        // Wait until at least the minimum required segments have loaded via Addressables before starting
-        // This prevents the player from running into an empty world on slow connections (WebGL/mobile)
-        yield return new WaitUntil(() => m_Segments.Count >= k_StartingSafeSegments + 1);
+        // Wait until at least the minimum required segments have loaded via Addressables before starting.
+        // Stop waiting if the Addressables/theme setup is broken; otherwise the game can sit on Loading forever.
+        float loadStartTime = Time.unscaledTime;
+        yield return new WaitUntil(() => m_Segments.Count >= k_StartingSafeSegments + 1 || loadFailed || Time.unscaledTime - loadStartTime >= k_InitialSegmentLoadTimeout);
+
+        if (loadFailed || m_Segments.Count < k_StartingSafeSegments + 1)
+        {
+            if (!loadFailed)
+                FailLoad("Track startup timed out before enough segments loaded. Check theme segment Addressables.");
+            yield break;
+        }
 
         isLoaded = true;
         StartCoroutine(WaitToStart());
@@ -255,57 +310,75 @@ public class TrackManager : MonoBehaviour
 
     public void End()
     {
-        foreach (TrackSegment seg in m_Segments)
+        for (int i = 0; i < m_Segments.Count; ++i)
         {
-            Addressables.ReleaseInstance(seg.gameObject);
-            _spawnedSegments--;
+            if (m_Segments[i] != null)
+                m_Segments[i].Cleanup();
         }
 
         for (int i = 0; i < m_PastSegments.Count; ++i)
         {
-            Addressables.ReleaseInstance(m_PastSegments[i].gameObject);
+            if (m_PastSegments[i] != null)
+                m_PastSegments[i].Cleanup();
         }
 
         m_Segments.Clear();
         m_PastSegments.Clear();
+        _spawnedSegments = 0;
 
-        characterController.End();
-
-        gameObject.SetActive(false);
-        Addressables.ReleaseInstance(characterController.character.gameObject);
-        characterController.character = null;
-
-        Camera.main.transform.SetParent(null);
-        Camera.main.transform.position = m_CameraOriginalPos;
-
-        characterController.gameObject.SetActive(false);
-
-        for (int i = 0; i < parallaxRoot.childCount; ++i)
+        if (characterController != null)
         {
-            _parallaxRootChildren--;
-            Destroy(parallaxRoot.GetChild(i).gameObject);
+            characterController.End();
+
+            if (characterController.character != null)
+            {
+                Addressables.ReleaseInstance(characterController.character.gameObject);
+                characterController.character = null;
+            }
+
+            characterController.gameObject.SetActive(false);
         }
 
+        gameObject.SetActive(false);
+
+        if (Camera.main != null)
+        {
+            Camera.main.transform.SetParent(null);
+            Camera.main.transform.position = m_CameraOriginalPos;
+        }
+
+        if (parallaxRoot != null)
+        {
+            for (int i = parallaxRoot.childCount - 1; i >= 0; --i)
+                Destroy(parallaxRoot.GetChild(i).gameObject);
+        }
+        _parallaxRootChildren = 0;
+
         //if our consumable wasn't used, we put it back in our inventory
-        if (characterController.inventory != null)
+        if (characterController != null && characterController.inventory != null)
         {
             PlayerData.instance.Add(characterController.inventory.GetConsumableType());
             characterController.inventory = null;
         }
     }
 
-
     private int _parallaxRootChildren = 0;
     private int _spawnedSegments = 0;
     void Update()
     {
-        while (_spawnedSegments < k_DesiredSegmentCount)
+        if (loadFailed || m_CurrentThemeData == null || m_CurrentThemeData.zones == null || m_CurrentThemeData.zones.Length == 0)
+            return;
+
+        if (m_SegmentSpawnFailures < k_MaxSegmentSpawnFailures && Time.unscaledTime >= m_NextSegmentSpawnRetryTime)
         {
-            StartCoroutine(SpawnNewSegment());
-            _spawnedSegments++;
+            while (_spawnedSegments < k_DesiredSegmentCount)
+            {
+                StartCoroutine(SpawnNewSegment());
+                _spawnedSegments++;
+            }
         }
 
-        if (parallaxRoot != null && currentTheme.cloudPrefabs.Length > 0)
+        if (parallaxRoot != null && currentTheme.cloudPrefabs != null && currentTheme.cloudPrefabs.Length > 0)
         {
             while (_parallaxRootChildren < currentTheme.cloudNumber)
             {
@@ -334,7 +407,10 @@ public class TrackManager : MonoBehaviour
         if (!m_IsMoving)
             return;
 
-        float scaledSpeed = m_Speed * Time.deltaTime;
+        if (m_Segments.Count == 0 || characterController == null)
+            return;
+
+        float scaledSpeed = speed * Time.deltaTime;
         m_ScoreAccum += scaledSpeed;
         m_CurrentZoneDistance += scaledSpeed;
 
@@ -402,7 +478,7 @@ public class TrackManager : MonoBehaviour
         characterTransform.rotation = currentRot;
         characterTransform.position = currentPos;
 
-        if (parallaxRoot != null && currentTheme.cloudPrefabs.Length > 0)
+        if (parallaxRoot != null && currentTheme.cloudPrefabs != null && currentTheme.cloudPrefabs.Length > 0)
         {
             for (int i = 0; i < parallaxRoot.childCount; ++i)
             {
@@ -435,7 +511,7 @@ public class TrackManager : MonoBehaviour
         else
             m_Speed = maxSpeed;
 
-        m_Multiplier = 1 + Mathf.FloorToInt((m_Speed - minSpeed) / (maxSpeed - minSpeed) * speedStep);
+        m_Multiplier = 1 + Mathf.FloorToInt(speedRatio * speedStep);
 
         if (modifyMultiply != null)
         {
@@ -480,20 +556,70 @@ public class TrackManager : MonoBehaviour
     private readonly Vector3 _offScreenSpawnPos = new Vector3(-100f, -100f, -100f);
     public IEnumerator SpawnNewSegment()
     {
+        if (m_CurrentThemeData == null || m_CurrentThemeData.zones == null || m_CurrentThemeData.zones.Length == 0)
+        {
+            CancelPendingSegmentSpawn();
+            yield break;
+        }
+
+        if (m_CurrentZone < 0 || m_CurrentZone >= m_CurrentThemeData.zones.Length)
+            m_CurrentZone = 0;
+
         if (m_CurrentThemeData.zones[m_CurrentZone].length < m_CurrentZoneDistance)
             ChangeZone();
 
-        int segmentUse = Random.Range(0, m_CurrentThemeData.zones[m_CurrentZone].prefabList.Length);
-        if (segmentUse == m_PreviousSegment) segmentUse = (segmentUse + 1) % m_CurrentThemeData.zones[m_CurrentZone].prefabList.Length;
-
-        AsyncOperationHandle segmentToUseOp = m_CurrentThemeData.zones[m_CurrentZone].prefabList[segmentUse].InstantiateAsync(_offScreenSpawnPos, Quaternion.identity);
-        yield return segmentToUseOp;
-        if (segmentToUseOp.Result == null || !(segmentToUseOp.Result is GameObject))
+        AssetReference[] prefabList = m_CurrentThemeData.zones[m_CurrentZone].prefabList;
+        if (prefabList == null || prefabList.Length == 0)
         {
-            Debug.LogWarning(string.Format("Unable to load segment {0}.", m_CurrentThemeData.zones[m_CurrentZone].prefabList[segmentUse].Asset.name));
+            Debug.LogWarning("Unable to spawn track segment because the current theme zone has no segment prefabs.");
+            CancelPendingSegmentSpawn();
             yield break;
         }
-        TrackSegment newSegment = (segmentToUseOp.Result as GameObject).GetComponent<TrackSegment>();
+
+        int segmentUse = Random.Range(0, prefabList.Length);
+        if (segmentUse == m_PreviousSegment) segmentUse = (segmentUse + 1) % prefabList.Length;
+        m_PreviousSegment = segmentUse;
+
+        AssetReference segmentReference = prefabList[segmentUse];
+        if (segmentReference == null)
+        {
+            Debug.LogWarning("Unable to spawn track segment because the selected segment reference is empty.");
+            CancelPendingSegmentSpawn();
+            yield break;
+        }
+
+        AsyncOperationHandle<GameObject> segmentToUseOp;
+        try
+        {
+            segmentToUseOp = segmentReference.InstantiateAsync(_offScreenSpawnPos, Quaternion.identity);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Unable to start loading track segment. Key: " + segmentReference.RuntimeKey + " Error: " + e.Message);
+            CancelPendingSegmentSpawn();
+            yield break;
+        }
+
+        yield return segmentToUseOp;
+
+        if (segmentToUseOp.Status != AsyncOperationStatus.Succeeded || segmentToUseOp.Result == null)
+        {
+            Debug.LogWarning("Unable to load track segment. Key: " + segmentReference.RuntimeKey);
+            if (segmentToUseOp.IsValid())
+                Addressables.Release(segmentToUseOp);
+            CancelPendingSegmentSpawn();
+            yield break;
+        }
+
+        GameObject segmentObject = segmentToUseOp.Result;
+        TrackSegment newSegment = segmentObject.GetComponent<TrackSegment>();
+        if (newSegment == null)
+        {
+            Debug.LogWarning("Loaded segment does not have a TrackSegment component. Key: " + segmentReference.RuntimeKey);
+            Addressables.ReleaseInstance(segmentObject);
+            CancelPendingSegmentSpawn();
+            yield break;
+        }
 
         Vector3 currentExitPoint;
         Quaternion currentExitRotation;
@@ -513,13 +639,13 @@ public class TrackManager : MonoBehaviour
         Quaternion entryRotation;
         newSegment.GetPointAt(0.0f, out entryPoint, out entryRotation);
 
-
         Vector3 pos = currentExitPoint + (newSegment.transform.position - entryPoint);
         newSegment.transform.position = pos;
         newSegment.manager = this;
 
         newSegment.transform.localScale = new Vector3((Random.value > 0.5f ? -1 : 1), 1, 1);
-        newSegment.objectRoot.localScale = new Vector3(1.0f / newSegment.transform.localScale.x, 1, 1);
+        if (newSegment.objectRoot != null)
+            newSegment.objectRoot.localScale = new Vector3(1.0f / newSegment.transform.localScale.x, 1, 1);
 
         if (m_SafeSegementLeft <= 0)
         {
@@ -528,15 +654,36 @@ public class TrackManager : MonoBehaviour
         else
             m_SafeSegementLeft -= 1;
 
+        m_SegmentSpawnFailures = 0;
+        m_NextSegmentSpawnRetryTime = 0.0f;
+
         m_Segments.Add(newSegment);
 
         if (newSegmentCreated != null) newSegmentCreated.Invoke(newSegment);
     }
 
+    void CancelPendingSegmentSpawn()
+    {
+        _spawnedSegments = Mathf.Max(0, _spawnedSegments - 1);
+        m_SegmentSpawnFailures++;
+        m_NextSegmentSpawnRetryTime = Time.unscaledTime + k_FailedSegmentRetryDelay;
+
+        if (m_SegmentSpawnFailures >= k_MaxSegmentSpawnFailures && !loadFailed)
+            FailLoad("Too many track segment load failures. Check the current theme segment Addressables.");
+    }
+
+    void FailLoad(string message)
+    {
+        loadFailed = true;
+        loadError = string.IsNullOrEmpty(message) ? "Track failed to load." : message;
+        isLoaded = false;
+        m_IsMoving = false;
+        Debug.LogError(loadError);
+    }
 
     public void SpawnObstacle(TrackSegment segment)
     {
-        if (segment.possibleObstacles.Length != 0)
+        if (!m_BikeLaneActive && segment != null && segment.possibleObstacles != null && segment.possibleObstacles.Length != 0 && segment.obstaclePositions != null)
         {
             for (int i = 0; i < segment.obstaclePositions.Length; ++i)
             {
@@ -550,36 +697,66 @@ public class TrackManager : MonoBehaviour
 
     private IEnumerator SpawnFromAssetReference(AssetReference reference, TrackSegment segment, int posIndex)
     {
-        AsyncOperationHandle op = Addressables.LoadAssetAsync<GameObject>(reference);
-        yield return op; 
-        GameObject obj = op.Result as GameObject;
-        if (obj != null)
-        {
-            Obstacle obstacle = obj.GetComponent<Obstacle>();
-            if (obstacle != null)
-                yield return obstacle.Spawn(segment, segment.obstaclePositions[posIndex]);
-        }
-    }
+        if (reference == null || segment == null)
+            yield break;
 
+        AsyncOperationHandle<GameObject> op;
+        try
+        {
+            op = Addressables.LoadAssetAsync<GameObject>(reference);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Skipping obstacle because its AssetReference is not loadable. Mark the prefab as Addressable. Key: " + reference.RuntimeKey + " Error: " + e.Message);
+            yield break;
+        }
+
+        yield return op;
+
+        if (op.Status != AsyncOperationStatus.Succeeded || op.Result == null)
+        {
+            Debug.LogWarning("Skipping obstacle because Addressables could not load it. Mark the prefab as Addressable. Key: " + reference.RuntimeKey);
+            if (op.IsValid())
+                Addressables.Release(op);
+            yield break;
+        }
+
+        GameObject obj = op.Result;
+        Obstacle obstacle = obj.GetComponent<Obstacle>();
+        if (obstacle != null)
+            yield return obstacle.Spawn(segment, segment.obstaclePositions[posIndex]);
+
+        if (op.IsValid())
+            Addressables.Release(op);
+    }
     public IEnumerator SpawnCoinAndPowerup(TrackSegment segment)
     {
+        if (segment == null)
+            yield break;
+
+        const float increment = 1.5f;
+        float currentWorldPos = 0.0f;
+        bool forceBikeLaneCoins = m_BikeLaneActive;
+        int currentLane = forceBikeLaneCoins ? m_ActiveBikeLaneIndex : Random.Range(0, 3);
+
+        float powerupChance = forceBikeLaneCoins ? 0.0f : Mathf.Clamp01(Mathf.Floor(m_TimeSincePowerup) * 0.5f * 0.001f);
+        float premiumChance = forceBikeLaneCoins ? 0.0f : Mathf.Clamp01(Mathf.Floor(m_TimeSinceLastPremium) * 0.5f * 0.0001f);
+
+        while (currentWorldPos < segment.worldLength)
         {
-            const float increment = 1.5f;
-            float currentWorldPos = 0.0f;
-            int currentLane = Random.Range(0, 3);
+            Vector3 pos;
+            Quaternion rot;
+            segment.GetPointAtInWorldUnit(currentWorldPos, out pos, out rot);
 
-            float powerupChance = Mathf.Clamp01(Mathf.Floor(m_TimeSincePowerup) * 0.5f * 0.001f);
-            float premiumChance = Mathf.Clamp01(Mathf.Floor(m_TimeSinceLastPremium) * 0.5f * 0.0001f);
+            bool laneValid = true;
+            int testedLane = currentLane;
 
-            while (currentWorldPos < segment.worldLength)
+            if (forceBikeLaneCoins)
             {
-                Vector3 pos;
-                Quaternion rot;
-                segment.GetPointAtInWorldUnit(currentWorldPos, out pos, out rot);
-
-
-                bool laneValid = true;
-                int testedLane = currentLane;
+                testedLane = m_ActiveBikeLaneIndex;
+            }
+            else
+            {
                 while (Physics.CheckSphere(pos + ((testedLane - 1) * laneOffset * (rot * Vector3.right)), 0.4f, 1 << 9))
                 {
                     testedLane = (testedLane + 1) % 3;
@@ -590,75 +767,89 @@ public class TrackManager : MonoBehaviour
                         break;
                     }
                 }
+            }
 
-                currentLane = testedLane;
+            currentLane = testedLane;
 
-                if (laneValid)
+            if (laneValid)
+            {
+                pos = pos + ((currentLane - 1) * laneOffset * (rot * Vector3.right));
+
+                GameObject toUse = null;
+                if (!forceBikeLaneCoins && consumableDatabase != null && consumableDatabase.consumbales != null && consumableDatabase.consumbales.Length > 0 && Random.value < powerupChance)
                 {
-                    pos = pos + ((currentLane - 1) * laneOffset * (rot * Vector3.right));
+                    int picked = Random.Range(0, consumableDatabase.consumbales.Length);
 
-
-                    GameObject toUse = null;
-                    if (Random.value < powerupChance)
+                    //if the powerup can't be spawned, we don't reset the time since powerup to continue to have a high chance of picking one next track segment
+                    if (consumableDatabase.consumbales[picked].canBeSpawned)
                     {
-                        int picked = Random.Range(0, consumableDatabase.consumbales.Length);
+                        // Spawn a powerup instead.
+                        m_TimeSincePowerup = 0.0f;
+                        powerupChance = 0.0f;
 
-                        //if the powerup can't be spawned, we don't reset the time since powerup to continue to have a high chance of picking one next track segment
-                        if (consumableDatabase.consumbales[picked].canBeSpawned)
-                        {
-                            // Spawn a powerup instead.
-                            m_TimeSincePowerup = 0.0f;
-                            powerupChance = 0.0f;
-
-                            AsyncOperationHandle op = Addressables.InstantiateAsync(consumableDatabase.consumbales[picked].gameObject.name, pos, rot);
-                            yield return op;
-                            if (op.Result == null || !(op.Result is GameObject))
-                            {
-                                Debug.LogWarning(string.Format("Unable to load consumable {0}.", consumableDatabase.consumbales[picked].gameObject.name));
-                                yield break;
-                            }
-                            toUse = op.Result as GameObject;
-                            toUse.transform.SetParent(segment.transform, true);
-                        }
-                    }
-                    else if (Random.value < premiumChance)
-                    {
-                        m_TimeSinceLastPremium = 0.0f;
-                        premiumChance = 0.0f;
-
-                        AsyncOperationHandle op = Addressables.InstantiateAsync(currentTheme.premiumCollectible.name, pos, rot);
+                        AsyncOperationHandle op = Addressables.InstantiateAsync(consumableDatabase.consumbales[picked].gameObject.name, pos, rot);
                         yield return op;
                         if (op.Result == null || !(op.Result is GameObject))
                         {
-                            Debug.LogWarning(string.Format("Unable to load collectable {0}.", currentTheme.premiumCollectible.name));
-                            yield break;
+                            Debug.LogWarning(string.Format("Unable to load consumable {0}.", consumableDatabase.consumbales[picked].gameObject.name));
+                            if (op.IsValid())
+                                Addressables.Release(op);
+                            currentWorldPos += increment;
+                            continue;
                         }
                         toUse = op.Result as GameObject;
+                        segment.TrackAddressableInstance(toUse);
                         toUse.transform.SetParent(segment.transform, true);
                     }
-                    else
-                    {
-                        toUse = Coin.coinPool.Get(pos, rot);
-                        toUse.transform.SetParent(segment.collectibleTransform, true);
-                    }
+                }
+                else if (!forceBikeLaneCoins && currentTheme.premiumCollectible != null && Random.value < premiumChance)
+                {
+                    m_TimeSinceLastPremium = 0.0f;
+                    premiumChance = 0.0f;
 
-                    if (toUse != null)
+                    AsyncOperationHandle op = Addressables.InstantiateAsync(currentTheme.premiumCollectible.name, pos, rot);
+                    yield return op;
+                    if (op.Result == null || !(op.Result is GameObject))
                     {
-                        //TODO : remove that hack related to #issue7
-                        Vector3 oldPos = toUse.transform.position;
-                        toUse.transform.position += Vector3.back;
-                        toUse.transform.position = oldPos;
+                        Debug.LogWarning(string.Format("Unable to load collectable {0}.", currentTheme.premiumCollectible.name));
+                        if (op.IsValid())
+                            Addressables.Release(op);
+                        currentWorldPos += increment;
+                        continue;
                     }
+                    toUse = op.Result as GameObject;
+                    segment.TrackAddressableInstance(toUse);
+                    toUse.transform.SetParent(segment.transform, true);
+                }
+                else
+                {
+                    toUse = Coin.coinPool.Get(pos, rot);
+                    toUse.transform.SetParent(segment.collectibleTransform, true);
                 }
 
-                currentWorldPos += increment;
+                if (toUse != null)
+                {
+                    //TODO : remove that hack related to #issue7
+                    Vector3 oldPos = toUse.transform.position;
+                    toUse.transform.position += Vector3.back;
+                    toUse.transform.position = oldPos;
+                }
             }
+
+            currentWorldPos += increment;
         }
     }
-
     public void AddScore(int amount)
     {
         int finalAmount = amount;
         m_Score += finalAmount * m_Multiplier;
     }
 }
+
+
+
+
+
+
+
+

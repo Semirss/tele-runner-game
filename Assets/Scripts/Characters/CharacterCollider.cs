@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
@@ -104,9 +104,13 @@ public class CharacterCollider : MonoBehaviour
 			if (magnetCoins.Contains(c.gameObject))
 				magnetCoins.Remove(c.gameObject);
 
-			if (c.GetComponent<Coin>().isPremium)
+            if (c.GetComponent<Coin>().isPremium)
             {
-				Addressables.ReleaseInstance(c.gameObject);
+                TrackSegment owningSegment = c.GetComponentInParent<TrackSegment>();
+                if (owningSegment != null)
+                    owningSegment.UntrackAddressableInstance(c.gameObject);
+
+                Addressables.ReleaseInstance(c.gameObject);
                 PlayerData.instance.premium += 1;
                 controller.premium += 1;
 				m_Audio.PlayOneShot(premiumSound);
@@ -121,47 +125,53 @@ public class CharacterCollider : MonoBehaviour
         }
         else if(c.gameObject.layer == k_ObstacleLayerIndex)
         {
+            BusRideSurface rideSurface = FindRideSurface(c);
+            if (rideSurface != null && rideSurface.TryStartRideFromObstacle(controller, c))
+                return;
+
+            BusObstacle busObstacle = c.GetComponentInParent<BusObstacle>();
+            if (busObstacle != null && busObstacle.TryStartRide(controller, c))
+                return;
+
             if (m_Invincible || controller.IsCheatInvincible())
                 return;
 
             controller.StopMoving();
 
-			c.enabled = false;
+            c.enabled = false;
 
-            Obstacle ob = c.gameObject.GetComponent<Obstacle>();
+            Obstacle ob = c.gameObject.GetComponentInParent<Obstacle>();
 
-			if (ob != null)
-			{
-				ob.Impacted();
-			}
-			else
-			{
-			    Addressables.ReleaseInstance(c.gameObject);
-			}
+            if (ob != null)
+            {
+                ob.Impacted();
+            }
+            else
+            {
+                Addressables.ReleaseInstance(c.gameObject);
+            }
 
             controller.currentLife -= 1;
 
             controller.character.animator.SetTrigger(s_HitHash);
 
-			if (controller.currentLife > 0)
-			{
-				
+            if (controller.currentLife > 0)
+            {
                 SetInvincible ();
-			}
+            }
             // The collision killed the player, record all data to analytics.
-			else
-			{
-				//m_Audio.PlayOneShot(controller.character.deathSound);
+            else
+            {
+                //m_Audio.PlayOneShot(controller.character.deathSound);
 
-				m_DeathData.character = controller.character.characterName;
-				m_DeathData.themeUsed = controller.trackManager.currentTheme.themeName;
-				m_DeathData.obstacleType = ob.GetType().ToString();
-				m_DeathData.coins = controller.coins;
-				m_DeathData.premium = controller.premium;
-				m_DeathData.score = controller.trackManager.score;
-				m_DeathData.worldDistance = controller.trackManager.worldDistance;
-
-			}
+                m_DeathData.character = controller.character.characterName;
+                m_DeathData.themeUsed = controller.trackManager.currentTheme.themeName;
+                m_DeathData.obstacleType = ob == null ? c.gameObject.name : ob.GetType().ToString();
+                m_DeathData.coins = controller.coins;
+                m_DeathData.premium = controller.premium;
+                m_DeathData.score = controller.trackManager.score;
+                m_DeathData.worldDistance = controller.trackManager.worldDistance;
+            }
         }
         else if(c.gameObject.layer == k_PowerupLayerIndex)
         {
@@ -173,6 +183,25 @@ public class CharacterCollider : MonoBehaviour
         }
     }
 
+    BusRideSurface FindRideSurface(Collider sourceCollider)
+    {
+        if (sourceCollider == null)
+            return null;
+
+        BusRideSurface rideSurface = sourceCollider.GetComponent<BusRideSurface>();
+        if (rideSurface != null)
+            return rideSurface;
+
+        rideSurface = sourceCollider.GetComponentInParent<BusRideSurface>();
+        if (rideSurface != null)
+            return rideSurface;
+
+        Obstacle obstacle = sourceCollider.GetComponentInParent<Obstacle>();
+        if (obstacle != null)
+            return obstacle.GetComponentInChildren<BusRideSurface>();
+
+        return sourceCollider.GetComponentInChildren<BusRideSurface>();
+    }
     public void SetInvincibleExplicit(bool invincible)
     {
         m_Invincible = invincible;
@@ -215,3 +244,5 @@ public class CharacterCollider : MonoBehaviour
 		m_Invincible = false;
     }
 }
+
+
