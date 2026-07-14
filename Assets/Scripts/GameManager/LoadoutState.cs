@@ -66,6 +66,7 @@ public class LoadoutState : AState
     protected int m_UsedAccessory = -1;
 	protected int m_UsedPowerupIndex;
     protected bool m_IsLoadingCharacter;
+    protected int m_PlayerRankRequestId;
 
 	protected Modifier m_CurrentModifier = new Modifier();
 
@@ -155,8 +156,33 @@ public class LoadoutState : AState
         if (playerNameDisplay != null)
             playerNameDisplay.text = GetPlayerDisplayName();
 
-        if (playerRankDisplay != null)
-            playerRankDisplay.text = "Rank " + (PlayerData.instance == null ? 0 : PlayerData.instance.rank);
+        RefreshPlayerLeaderboardRank();
+    }
+
+    void RefreshPlayerLeaderboardRank()
+    {
+        if (playerRankDisplay == null)
+            return;
+
+        SupabaseClient client = SupabaseClient.instance;
+        if (client == null || !client.IsConfigured || !client.HasLocalPlayer)
+        {
+            playerRankDisplay.text = "Rank --";
+            return;
+        }
+
+        int requestId = ++m_PlayerRankRequestId;
+        playerRankDisplay.text = "Rank ...";
+        client.FetchLocalLeaderboardRank(result =>
+        {
+            if (requestId != m_PlayerRankRequestId || this == null || playerRankDisplay == null)
+                return;
+
+            if (result != null && result.success && result.rank > 0)
+                playerRankDisplay.text = "Rank " + result.rank;
+            else
+                playerRankDisplay.text = "Rank --";
+        });
     }
 
     string GetPlayerDisplayName()

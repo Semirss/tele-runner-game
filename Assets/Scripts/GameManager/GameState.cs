@@ -179,7 +179,8 @@ public class GameState : AState
         {
             toRemove[i].Ended(trackManager.characterController);
 
-            Addressables.ReleaseInstance(toRemove[i].gameObject);
+            if (!Addressables.ReleaseInstance(toRemove[i].gameObject))
+                Destroy(toRemove[i].gameObject);
             if (toRemoveIcon[i] != null)
                 Destroy(toRemoveIcon[i].gameObject);
 
@@ -365,4 +366,3 @@ public class GameState : AState
         StartGame();
     }
 }
-

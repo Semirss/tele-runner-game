@@ -47,6 +47,11 @@ public class TrackManager : MonoBehaviour
     [Tooltip("Multiplier applied to track speed while the bike lane powerup is active.")]
     public float bikeLaneSpeedMultiplier = 1.65f;
 
+    [Header("Testing Cheats")]
+    public bool enableBikeLaneCheat = true;
+    public KeyCode bikeLaneCheatKey = KeyCode.Alpha7;
+    public float bikeLaneCheatDuration = 8.0f;
+
     [Header("Objects")]
     public ConsumableDatabase consumableDatabase;
     public MeshFilter skyMeshFilter;
@@ -113,6 +118,9 @@ public class TrackManager : MonoBehaviour
 
     protected int m_Score;
     protected float m_ScoreAccum;
+    protected Coroutine m_BikeLaneCheatRoutine;
+    protected readonly Collider[] m_PickupPlacementColliders = new Collider[16];
+    protected readonly RaycastHit[] m_PickupPlacementHits = new RaycastHit[16];
     protected bool m_Rerun;     // This lets us know if we are entering a game over (ads) state or starting a new game (see GameState)
     protected int m_SegmentSpawnFailures;
     protected float m_NextSegmentSpawnRetryTime;
@@ -134,6 +142,10 @@ public class TrackManager : MonoBehaviour
     protected const int k_MaxSegmentSpawnFailures = 25;
     protected const float k_FailedSegmentRetryDelay = 0.25f;
     protected const float k_InitialSegmentLoadTimeout = 15.0f;
+    protected const float k_PickupObstacleCheckRadius = 0.4f;
+    protected const float k_PickupRoofProbeHeight = 8.0f;
+    protected const float k_PickupRoofProbeDistance = 16.0f;
+    protected const float k_PickupRoofOffset = 0.45f;
     
     protected void Awake()
     {
@@ -163,10 +175,7 @@ public class TrackManager : MonoBehaviour
         m_ActiveBikeLaneIndex = Mathf.Clamp(laneIndex, 0, 2);
         m_ActiveBikeLaneSpeedMultiplier = Mathf.Max(1.0f, speedMultiplier);
 
-        if (characterController != null)
-        {
-            characterController.ForceLane(m_ActiveBikeLaneIndex);
-        }
+        // Do not force the player into the bike lane. The active safe lane follows the powerup/cheat lane instead.
     }
 
     public void EndBikeLane()
@@ -207,6 +216,12 @@ public class TrackManager : MonoBehaviour
         m_SegmentSpawnFailures = 0;
         m_NextSegmentSpawnRetryTime = 0.0f;
 
+        if (characterController == null)
+        {
+            FailLoad("TrackManager has no CharacterInputController assigned.");
+            yield break;
+        }
+
         if (!m_Rerun)
         {
             if (Camera.main != null)
@@ -240,10 +255,16 @@ public class TrackManager : MonoBehaviour
             yield return op;
             if (op.Result == null || !(op.Result is GameObject))
             {
-                Debug.LogWarning(string.Format("Unable to load character {0}.", PlayerData.instance.characters[PlayerData.instance.usedCharacter]));
+                FailLoad(string.Format("Unable to load character {0}.", PlayerData.instance.characters[PlayerData.instance.usedCharacter]));
                 yield break;
             }
             Character player = op.Result.GetComponent<Character>();
+            if (player == null)
+            {
+                Addressables.ReleaseInstance(op.Result);
+                FailLoad(string.Format("Loaded character {0} has no Character component.", PlayerData.instance.characters[PlayerData.instance.usedCharacter]));
+                yield break;
+            }
 
             player.SetupAccesory(PlayerData.instance.usedAccessory);
 
@@ -254,9 +275,25 @@ public class TrackManager : MonoBehaviour
             characterController.CheatInvincible(invincible);
             
             player.transform.SetParent(characterController.characterCollider.transform, false);
-            Camera.main.transform.SetParent(characterController.transform, true);
+            if (Camera.main != null)
+                Camera.main.transform.SetParent(characterController.transform, true);
 
             m_CurrentThemeData = ThemeDatabase.GetThemeData(PlayerData.instance.themes[PlayerData.instance.usedTheme]);
+            if (m_CurrentThemeData == null)
+            {
+                FailLoad(string.Format("Unable to load theme data {0}.", PlayerData.instance.themes[PlayerData.instance.usedTheme]));
+                yield break;
+            }
+            if (m_CurrentThemeData.zones == null || m_CurrentThemeData.zones.Length == 0)
+            {
+                FailLoad(string.Format("Theme {0} has no track zones.", m_CurrentThemeData.themeName));
+                yield break;
+            }
+            if (m_CurrentThemeData.collectiblePrefab == null)
+            {
+                FailLoad(string.Format("Theme {0} has no collectible prefab.", m_CurrentThemeData.themeName));
+                yield break;
+            }
 
             m_CurrentZone = 0;
             m_CurrentZoneDistance = 0;
@@ -326,6 +363,19 @@ public class TrackManager : MonoBehaviour
         m_PastSegments.Clear();
         _spawnedSegments = 0;
 
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            mainCamera.transform.SetParent(null);
+            mainCamera.transform.position = m_CameraOriginalPos;
+            mainCamera.gameObject.SetActive(true);
+            mainCamera.enabled = true;
+
+            AudioListener listener = mainCamera.GetComponent<AudioListener>();
+            if (listener != null)
+                listener.enabled = true;
+        }
+
         if (characterController != null)
         {
             characterController.End();
@@ -340,12 +390,6 @@ public class TrackManager : MonoBehaviour
         }
 
         gameObject.SetActive(false);
-
-        if (Camera.main != null)
-        {
-            Camera.main.transform.SetParent(null);
-            Camera.main.transform.position = m_CameraOriginalPos;
-        }
 
         if (parallaxRoot != null)
         {
@@ -366,6 +410,8 @@ public class TrackManager : MonoBehaviour
     private int _spawnedSegments = 0;
     void Update()
     {
+        HandleBikeLaneCheatInput();
+
         if (loadFailed || m_CurrentThemeData == null || m_CurrentThemeData.zones == null || m_CurrentThemeData.zones.Length == 0)
             return;
 
@@ -652,7 +698,10 @@ public class TrackManager : MonoBehaviour
             SpawnObstacle(newSegment);
         }
         else
+        {
             m_SafeSegementLeft -= 1;
+            StartCoroutine(SpawnCoinAndPowerup(newSegment));
+        }
 
         m_SegmentSpawnFailures = 0;
         m_NextSegmentSpawnRetryTime = 0.0f;
@@ -683,16 +732,24 @@ public class TrackManager : MonoBehaviour
 
     public void SpawnObstacle(TrackSegment segment)
     {
-        if (!m_BikeLaneActive && segment != null && segment.possibleObstacles != null && segment.possibleObstacles.Length != 0 && segment.obstaclePositions != null)
+        StartCoroutine(SpawnObstacleAndPickups(segment));
+    }
+
+    IEnumerator SpawnObstacleAndPickups(TrackSegment segment)
+    {
+        if (segment == null)
+            yield break;
+
+        if (!m_BikeLaneActive && segment.possibleObstacles != null && segment.possibleObstacles.Length != 0 && segment.obstaclePositions != null)
         {
             for (int i = 0; i < segment.obstaclePositions.Length; ++i)
             {
                 AssetReference assetRef = segment.possibleObstacles[Random.Range(0, segment.possibleObstacles.Length)];
-                StartCoroutine(SpawnFromAssetReference(assetRef, segment, i));
+                yield return SpawnFromAssetReference(assetRef, segment, i);
             }
         }
 
-        StartCoroutine(SpawnCoinAndPowerup(segment));
+        yield return SpawnCoinAndPowerup(segment);
     }
 
     private IEnumerator SpawnFromAssetReference(AssetReference reference, TrackSegment segment, int posIndex)
@@ -757,7 +814,7 @@ public class TrackManager : MonoBehaviour
             }
             else
             {
-                while (Physics.CheckSphere(pos + ((testedLane - 1) * laneOffset * (rot * Vector3.right)), 0.4f, 1 << 9))
+                while (IsPickupBlockedByNonRideableObstacle(pos + ((testedLane - 1) * laneOffset * (rot * Vector3.right))))
                 {
                     testedLane = (testedLane + 1) % 3;
                     if (currentLane == testedLane)
@@ -774,6 +831,7 @@ public class TrackManager : MonoBehaviour
             if (laneValid)
             {
                 pos = pos + ((currentLane - 1) * laneOffset * (rot * Vector3.right));
+                AdjustPickupPositionForRideableSurface(ref pos);
 
                 GameObject toUse = null;
                 if (!forceBikeLaneCoins && consumableDatabase != null && consumableDatabase.consumbales != null && consumableDatabase.consumbales.Length > 0 && Random.value < powerupChance)
@@ -839,17 +897,128 @@ public class TrackManager : MonoBehaviour
             currentWorldPos += increment;
         }
     }
+    bool IsPickupBlockedByNonRideableObstacle(Vector3 position)
+    {
+        int obstacleLayer = LayerMask.NameToLayer("Obstacle");
+        if (obstacleLayer < 0)
+            return false;
+
+        int count = Physics.OverlapSphereNonAlloc(position, k_PickupObstacleCheckRadius, m_PickupPlacementColliders, 1 << obstacleLayer, QueryTriggerInteraction.Collide);
+        bool blocked = false;
+
+        for (int i = 0; i < count; ++i)
+        {
+            Collider hit = m_PickupPlacementColliders[i];
+            m_PickupPlacementColliders[i] = null;
+            if (hit == null)
+                continue;
+
+            if (IsRideableBusCollider(hit))
+                continue;
+
+            blocked = true;
+        }
+
+        return blocked;
+    }
+
+    void AdjustPickupPositionForRideableSurface(ref Vector3 position)
+    {
+        int obstacleLayer = LayerMask.NameToLayer("Obstacle");
+        if (obstacleLayer < 0)
+            return;
+
+        bool found = false;
+        float roofY = position.y;
+        Vector3 origin = position + Vector3.up * k_PickupRoofProbeHeight;
+        int mask = 1 << obstacleLayer;
+
+        int hitCount = Physics.RaycastNonAlloc(origin, Vector3.down, m_PickupPlacementHits, k_PickupRoofProbeDistance, mask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < hitCount; ++i)
+        {
+            RaycastHit hit = m_PickupPlacementHits[i];
+            if (hit.collider == null || !IsRideableBusCollider(hit.collider))
+                continue;
+
+            if (hit.point.y > roofY)
+            {
+                roofY = hit.point.y;
+                found = true;
+            }
+        }
+
+        int overlapCount = Physics.OverlapSphereNonAlloc(position, k_PickupObstacleCheckRadius, m_PickupPlacementColliders, mask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < overlapCount; ++i)
+        {
+            Collider hit = m_PickupPlacementColliders[i];
+            m_PickupPlacementColliders[i] = null;
+            if (hit == null || !IsRideableBusCollider(hit))
+                continue;
+
+            if (hit.bounds.max.y > roofY)
+            {
+                roofY = hit.bounds.max.y;
+                found = true;
+            }
+        }
+
+        if (found)
+            position.y = roofY + k_PickupRoofOffset;
+    }
+
+    bool IsRideableBusCollider(Collider hit)
+    {
+        if (hit == null)
+            return false;
+
+        return hit.GetComponentInParent<BusRideSurface>() != null || hit.GetComponentInParent<BusObstacle>() != null;
+    }
+
+    void HandleBikeLaneCheatInput()
+    {
+        if (!enableBikeLaneCheat)
+            return;
+
+        if (Input.GetKeyDown(bikeLaneCheatKey) || Input.GetKeyDown(KeyCode.Keypad7))
+            ActivateBikeLaneCheat();
+    }
+
+    public void ActivateBikeLaneCheat()
+    {
+        if (characterController == null || !isLoaded || !m_IsMoving)
+            return;
+
+        Consumable bikePowerup = null;
+        if (consumableDatabase != null)
+        {
+            consumableDatabase.Load();
+            bikePowerup = ConsumableDatabase.GetConsumbale(Consumable.ConsumableType.BIKE_LANE);
+        }
+
+        if (bikePowerup != null)
+        {
+            Consumable instance = Instantiate(bikePowerup);
+            characterController.UseConsumable(instance);
+            return;
+        }
+
+        int fallbackLane = characterController != null ? characterController.currentLane : bikeLaneIndex;
+        BeginBikeLane(fallbackLane, bikeLaneSpeedMultiplier);
+        if (m_BikeLaneCheatRoutine != null)
+            StopCoroutine(m_BikeLaneCheatRoutine);
+        m_BikeLaneCheatRoutine = StartCoroutine(EndBikeLaneCheatAfterDelay());
+    }
+
+    IEnumerator EndBikeLaneCheatAfterDelay()
+    {
+        yield return new WaitForSeconds(Mathf.Max(0.1f, bikeLaneCheatDuration));
+        EndBikeLane();
+        m_BikeLaneCheatRoutine = null;
+    }
     public void AddScore(int amount)
     {
         int finalAmount = amount;
         m_Score += finalAmount * m_Multiplier;
     }
 }
-
-
-
-
-
-
-
 

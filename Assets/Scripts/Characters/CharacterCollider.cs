@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
@@ -133,6 +133,12 @@ public class CharacterCollider : MonoBehaviour
             if (busObstacle != null && busObstacle.TryStartRide(controller, c))
                 return;
 
+            if (IsBikeModeActive())
+            {
+                IgnoreObstacleWhileBiking(c);
+                return;
+            }
+
             if (m_Invincible || controller.IsCheatInvincible())
                 return;
 
@@ -181,6 +187,42 @@ public class CharacterCollider : MonoBehaviour
                 controller.UseConsumable(consumable);
             }
         }
+    }
+
+    void IgnoreObstacleWhileBiking(Collider sourceCollider)
+    {
+        if (sourceCollider == null)
+            return;
+
+        if (m_Collider == null)
+            m_Collider = GetComponent<BoxCollider>();
+
+        Obstacle obstacle = sourceCollider.GetComponentInParent<Obstacle>();
+        if (obstacle == null)
+        {
+            if (m_Collider != null)
+                Physics.IgnoreCollision(m_Collider, sourceCollider, true);
+            return;
+        }
+
+        Collider[] obstacleColliders = obstacle.GetComponentsInChildren<Collider>();
+        for (int i = 0; i < obstacleColliders.Length; ++i)
+        {
+            Collider obstacleCollider = obstacleColliders[i];
+            if (m_Collider != null && obstacleCollider != null)
+                Physics.IgnoreCollision(m_Collider, obstacleCollider, true);
+        }
+    }
+
+    bool IsBikeModeActive()
+    {
+        if (controller == null)
+            return false;
+
+        if (controller.trackManager != null && controller.trackManager.bikeLaneActive)
+            return true;
+
+        return controller.character != null && controller.character.isBikeRiding;
     }
 
     BusRideSurface FindRideSurface(Collider sourceCollider)
@@ -244,5 +286,3 @@ public class CharacterCollider : MonoBehaviour
 		m_Invincible = false;
     }
 }
-
-

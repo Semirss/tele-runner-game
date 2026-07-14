@@ -82,6 +82,9 @@ public class GameOverState : AState
         string displayName = GetCurrentPlayerName();
         int finalScore = trackManager == null ? 0 : trackManager.score;
 
+        if (miniLeaderboard != null)
+            miniLeaderboard.gameObject.SetActive(false);
+
         fullLeaderboard.forcePlayerDisplay = false;
         fullLeaderboard.displayPlayer = true;
         ApplyPlayerEntry(fullLeaderboard, displayName, finalScore);

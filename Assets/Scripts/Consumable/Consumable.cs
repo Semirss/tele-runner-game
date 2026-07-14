@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
 /// Defines a consumable, called a power up in game.
@@ -51,17 +52,44 @@ public abstract class Consumable : MonoBehaviour
     {
         m_SinceStart = 0;
 
-        if (ActivatedParticleReference != null)
-        {
-            var op = ActivatedParticleReference.InstantiateAsync();
-            yield return op;
-            m_ParticleSpawned = op.Result.GetComponent<ParticleSystem>();
-            if (!m_ParticleSpawned.main.loop)
-                StartCoroutine(TimedRelease(m_ParticleSpawned.gameObject, m_ParticleSpawned.main.duration));
+        if (ActivatedParticleReference == null || !ActivatedParticleReference.RuntimeKeyIsValid())
+            yield break;
 
-            m_ParticleSpawned.transform.SetParent(c.characterCollider.transform);
-            m_ParticleSpawned.transform.localPosition = op.Result.transform.position;
+        AsyncOperationHandle<GameObject> op;
+        try
+        {
+            op = ActivatedParticleReference.InstantiateAsync();
         }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Unable to spawn consumable activation particle: " + e.Message);
+            yield break;
+        }
+
+        yield return op;
+
+        GameObject particleObject = op.Result;
+        if (particleObject == null)
+        {
+            if (op.IsValid())
+                Addressables.Release(op);
+            yield break;
+        }
+
+        m_ParticleSpawned = particleObject.GetComponent<ParticleSystem>();
+        if (m_ParticleSpawned == null)
+        {
+            Addressables.ReleaseInstance(particleObject);
+            yield break;
+        }
+
+        if (!m_ParticleSpawned.main.loop)
+            StartCoroutine(TimedRelease(m_ParticleSpawned.gameObject, m_ParticleSpawned.main.duration));
+
+        if (c != null && c.characterCollider != null)
+            m_ParticleSpawned.transform.SetParent(c.characterCollider.transform);
+
+        m_ParticleSpawned.transform.localPosition = particleObject.transform.position;
     }
 
     IEnumerator TimedRelease(GameObject obj, float time)

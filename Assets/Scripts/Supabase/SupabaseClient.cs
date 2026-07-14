@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -77,6 +77,11 @@ public class SupabaseClient : MonoBehaviour
     public void FetchLeaderboard(int limit, Action<SupabaseLeaderboardResult> callback)
     {
         StartCoroutine(FetchLeaderboardRoutine(limit, callback));
+    }
+
+    public void FetchLocalLeaderboardRank(Action<SupabaseRankResult> callback)
+    {
+        StartCoroutine(FetchLocalLeaderboardRankRoutine(callback));
     }
 
     IEnumerator RegisterRoutine(string displayName, string phone, string email, string password, Action<SupabaseResult> callback)
@@ -181,6 +186,41 @@ public class SupabaseClient : MonoBehaviour
 
             LeaderboardRows wrapper = JsonUtility.FromJson<LeaderboardRows>("{\"items\":" + body + "}");
             callback?.Invoke(SupabaseLeaderboardResult.Success(wrapper == null || wrapper.items == null ? new List<LeaderboardRow>() : wrapper.items));
+        });
+    }
+    IEnumerator FetchLocalLeaderboardRankRoutine(Action<SupabaseRankResult> callback)
+    {
+        if (!IsConfigured)
+        {
+            callback?.Invoke(SupabaseRankResult.Failure("SupabaseConfig.json still has placeholder values."));
+            yield break;
+        }
+
+        if (!HasLocalPlayer)
+        {
+            callback?.Invoke(SupabaseRankResult.Failure("Player is not registered or signed in."));
+            yield break;
+        }
+
+        string encodedName = UnityWebRequest.EscapeURL(DisplayName);
+        string path = "/rest/v1/leaderboard?select=rank,player_name,score&player_name=eq." + encodedName + "&order=score.desc&limit=1";
+        yield return SendJson(path, "GET", null, (ok, body, code) =>
+        {
+            if (!ok)
+            {
+                callback?.Invoke(SupabaseRankResult.Failure(ExtractError(body, code)));
+                return;
+            }
+
+            LeaderboardRows wrapper = JsonUtility.FromJson<LeaderboardRows>("{\"items\":" + body + "}");
+            if (wrapper == null || wrapper.items == null || wrapper.items.Count == 0)
+            {
+                callback?.Invoke(SupabaseRankResult.Failure("No leaderboard score yet."));
+                return;
+            }
+
+            LeaderboardRow row = wrapper.items[0];
+            callback?.Invoke(SupabaseRankResult.Success(row.rank, row.score));
         });
     }
 
@@ -387,6 +427,22 @@ public class SupabaseClient : MonoBehaviour
         public static SupabaseResult Failure(string message)
         {
             return new SupabaseResult { success = false, message = message };
+        }
+    }
+
+    public class SupabaseRankResult : SupabaseResult
+    {
+        public int rank;
+        public int score;
+
+        public static SupabaseRankResult Success(int rank, int score)
+        {
+            return new SupabaseRankResult { success = true, rank = rank, score = score };
+        }
+
+        public new static SupabaseRankResult Failure(string message)
+        {
+            return new SupabaseRankResult { success = false, message = message, rank = 0, score = 0 };
         }
     }
 

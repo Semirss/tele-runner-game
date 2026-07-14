@@ -150,12 +150,21 @@ public class CharacterInputController : MonoBehaviour
         for (int i = 0; i < m_ActiveConsumables.Count; ++i)
         {
             m_ActiveConsumables[i].Ended(this);
-            Addressables.ReleaseInstance(m_ActiveConsumables[i].gameObject);
+            ReleaseConsumableObject(m_ActiveConsumables[i].gameObject);
         }
 
         m_ActiveConsumables.Clear();
     }
 
+
+    void ReleaseConsumableObject(GameObject obj)
+    {
+        if (obj == null)
+            return;
+
+        if (!Addressables.ReleaseInstance(obj))
+            Destroy(obj);
+    }
     public void StartRunning()
     {   
 	    StartMoving();
@@ -515,7 +524,9 @@ public class CharacterInputController : MonoBehaviour
         if (owningSegment != null)
             owningSegment.UntrackAddressableInstance(c.gameObject);
 
-		characterCollider.audio.PlayOneShot(powerUpUseSound);
+        AudioSource useSource = characterCollider == null ? null : characterCollider.audio;
+        if (useSource != null && useSource.enabled && useSource.gameObject.activeInHierarchy && powerUpUseSound != null)
+            useSource.PlayOneShot(powerUpUseSound);
 
         for(int i = 0; i < m_ActiveConsumables.Count; ++i)
         {
@@ -523,7 +534,7 @@ public class CharacterInputController : MonoBehaviour
             {
 				// If we already have an active consumable of that type, we just reset the time
                 m_ActiveConsumables[i].ResetTime();
-                Addressables.ReleaseInstance(c.gameObject);
+                ReleaseConsumableObject(c.gameObject);
                 return;
             }
         }
@@ -536,4 +547,3 @@ public class CharacterInputController : MonoBehaviour
         StartCoroutine(c.Started(this));
     }
 }
-
