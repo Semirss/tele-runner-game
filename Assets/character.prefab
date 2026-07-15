@@ -58,6 +58,7 @@ MonoBehaviour:
   - {fileID: 5128969405826507103}
   runningVisuals:
   - {fileID: 725607247118445865}
+  bikeHiddenVisuals: []
   animateBikeVisuals: 1
   bikeCycleDegreesPerSecond: 540
   bikeWheels: []
@@ -66,6 +67,8 @@ MonoBehaviour:
   bikePedalRotators: []
   bikePedalLocalAxis: {x: 0, y: 0, z: 1}
   bikePedalSpeedMultiplier: 1
+  disableBikeVisualColliders: 1
+  disableBikeVisualAnimators: 1
   leftUpperLeg: {fileID: 2545235635641101962}
   leftLowerLeg: {fileID: 7199202190601827924}
   leftFoot: {fileID: 2327946525278719672}
@@ -257,7 +260,7 @@ PrefabInstance:
     - target: {fileID: 464141968781854204, guid: cb8873206a27be742a7b0a3827b55e78,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 464141968781854204, guid: cb8873206a27be742a7b0a3827b55e78,
         type: 3}

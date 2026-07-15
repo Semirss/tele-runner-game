@@ -85,6 +85,7 @@ public class BikeLanePowerup : Consumable
         if (c != null && c.trackManager != null)
         {
             c.trackManager.EndBikeLane();
+            c.RestoreRunningAnimationAfterBike();
         }
 
         base.Ended(c);

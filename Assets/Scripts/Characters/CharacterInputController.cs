@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
@@ -167,15 +167,45 @@ public class CharacterInputController : MonoBehaviour
     }
     public void StartRunning()
     {   
-	    StartMoving();
-        if (character.animator)
-        {
-            character.animator.Play(s_RunStartHash);
-            character.animator.SetBool(s_MovingHash, true);
-        }
+        StartMoving();
+        PlayRunningAnimation(true);
     }
 
-	public void StartMoving()
+    public void RestoreRunningAnimationAfterBike()
+    {
+        if (trackManager == null || !trackManager.isMoving || currentLife <= 0)
+            return;
+
+        m_IsRunning = true;
+        StopJumping();
+        StopSliding();
+        PlayRunningAnimation(false);
+    }
+
+    void PlayRunningAnimation(bool restartFromBeginning)
+    {
+        if (character == null || character.animator == null)
+            return;
+
+        Animator animator = character.animator;
+        if (!animator.gameObject.activeInHierarchy)
+            return;
+
+        animator.enabled = true;
+        animator.SetBool(s_DeadHash, false);
+        animator.SetBool(s_JumpingHash, false);
+        animator.SetBool(s_SlidingHash, false);
+        animator.SetBool(s_MovingHash, true);
+
+        if (restartFromBeginning)
+            animator.Play(s_RunStartHash, 0, 0.0f);
+        else
+            animator.CrossFade(s_RunStartHash, 0.05f, 0, 0.0f);
+
+        animator.Update(0.0f);
+    }
+
+    public void StartMoving()
 	{
 		m_IsRunning = true;
 	}
