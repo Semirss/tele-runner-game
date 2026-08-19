@@ -23985,8 +23985,12 @@ MonoBehaviour:
   invincible: 0
   bikeLaneIndex: 2
   bikeLaneSpeedMultiplier: 1.65
+  enableBikeLaneCheat: 1
+  bikeLaneCheatKey: 55
+  bikeLaneCheatDuration: 8
   consumableDatabase: {fileID: 11400000, guid: 5d316f81231c9964dadda0b50ca7ae6b, type: 2}
   skyMeshFilter: {fileID: 201362454}
+  cocaCoinPrefab: {fileID: 184264, guid: 966c104e5905c0a45b3cde0d9fec6a10, type: 3}
   parallaxRoot: {fileID: 1617204952}
   parallaxRatio: 0.8
 --- !u!4 &1958487561
@@ -29735,6 +29739,7 @@ MonoBehaviour:
   characterCollider: {fileID: 1144878499}
   blobShadow: {fileID: 184212906}
   laneChangeSpeed: 14
+  rideSurfaceVerticalSpeed: 8
   maxLife: 3
   inventory: {fileID: 0}
   jumpLength: 6

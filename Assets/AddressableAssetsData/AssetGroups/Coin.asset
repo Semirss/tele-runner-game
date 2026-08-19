@@ -13,18 +13,23 @@ MonoBehaviour:
   m_Name: Coin
   m_EditorClassIdentifier: 
   m_GroupName: Coin
-  m_Data:
-    m_SerializedData: []
   m_GUID: 89278b1b8bdb81c4996129605154b1d9
   m_SerializeEntries:
   - m_GUID: 16cac8b68c4ca6448baecd0680e025f6
     m_Address: Pickup
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 966c104e5905c0a45b3cde0d9fec6a10
+    m_Address: Coca coin
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac3c86c2382618643bfda6ab3cc81a0b
     m_Address: PremiumCollectible
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:

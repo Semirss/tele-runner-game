@@ -18,6 +18,7 @@ public abstract class Consumable : MonoBehaviour
         INVINCIBILITY,
         EXTRALIFE,
         BIKE_LANE,
+        Coca_COIN,
         MAX_COUNT
     }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
@@ -55,6 +55,10 @@ public class TrackManager : MonoBehaviour
     [Header("Objects")]
     public ConsumableDatabase consumableDatabase;
     public MeshFilter skyMeshFilter;
+    [Tooltip("Drag your CocaCoin prefab here. Must also be marked Addressable.")]
+    public GameObject cocaCoinPrefab;
+    [Tooltip("Average time in seconds before a CocaCoin spawns (assuming no obstacles block it).")]
+    public float cocaCoinSpawnInterval = 30.0f;
 
     [Header("Parallax")]
     public Transform parallaxRoot;
@@ -104,6 +108,7 @@ public class TrackManager : MonoBehaviour
 
     protected float m_TimeSincePowerup;     // The higher it goes, the higher the chance of spawning one
     protected float m_TimeSinceLastPremium;
+    protected float m_TimeSinceLastCocaCoin;  // Timer for CocaCoin spawn interval
 
     protected int m_Multiplier;
 
@@ -588,6 +593,7 @@ public class TrackManager : MonoBehaviour
     {
         m_TimeSincePowerup += Time.deltaTime;
         m_TimeSinceLastPremium += Time.deltaTime;
+        m_TimeSinceLastCocaCoin += Time.deltaTime;  // Advance CocaCoin spawn timer
     }
 
     public void ChangeZone()
@@ -798,6 +804,8 @@ public class TrackManager : MonoBehaviour
 
         float powerupChance = forceBikeLaneCoins ? 0.0f : Mathf.Clamp01(Mathf.Floor(m_TimeSincePowerup) * 0.5f * 0.001f);
         float premiumChance = forceBikeLaneCoins ? 0.0f : Mathf.Clamp01(Mathf.Floor(m_TimeSinceLastPremium) * 0.5f * 0.0001f);
+        // CocaCoin chance: scales based on the cocaCoinSpawnInterval set in the Inspector
+        float cocaChance = forceBikeLaneCoins ? 0.0f : Mathf.Clamp01(Mathf.Floor(m_TimeSinceLastCocaCoin) * 0.5f * (1.0f / Mathf.Max(1.0f, cocaCoinSpawnInterval)));
 
         while (currentWorldPos < segment.worldLength)
         {
@@ -845,7 +853,18 @@ public class TrackManager : MonoBehaviour
                         m_TimeSincePowerup = 0.0f;
                         powerupChance = 0.0f;
 
-                        AsyncOperationHandle op = Addressables.InstantiateAsync(consumableDatabase.consumbales[picked].gameObject.name, pos, rot);
+                        AsyncOperationHandle op;
+                        try
+                        {
+                            op = Addressables.InstantiateAsync(consumableDatabase.consumbales[picked].gameObject.name, pos, rot);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogWarning(string.Format("Skipping consumable {0} because of exception: {1}", consumableDatabase.consumbales[picked].gameObject.name, e.Message));
+                            currentWorldPos += increment;
+                            continue;
+                        }
+
                         yield return op;
                         if (op.Result == null || !(op.Result is GameObject))
                         {
@@ -878,6 +897,46 @@ public class TrackManager : MonoBehaviour
                     toUse = op.Result as GameObject;
                     segment.TrackAddressableInstance(toUse);
                     toUse.transform.SetParent(segment.transform, true);
+                }
+                else if (!forceBikeLaneCoins && cocaCoinPrefab != null && Random.value < cocaChance)
+                {
+                    // Pick a lane DIFFERENT from the current coin lane so CocaCoin never overlaps regular coins
+                    int cocaLane = (currentLane + 1 + Random.Range(0, 2)) % 3;
+                    Vector3 cocaLanePos = pos + ((cocaLane - 1) * laneOffset * (rot * Vector3.right));
+
+                    if (!IsPickupBlockedByNonRideableObstacle(cocaLanePos))
+                    {
+                        AdjustPickupPositionForRideableSurface(ref cocaLanePos);
+
+                        m_TimeSinceLastCocaCoin = 0.0f;
+                        cocaChance = 0.0f;
+
+                        AsyncOperationHandle cocaOp;
+                        try
+                        {
+                            cocaOp = Addressables.InstantiateAsync("Coca coin", cocaLanePos, rot);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogWarning("Skipping CocaCoin because of exception: " + e.Message);
+                            currentWorldPos += increment;
+                            continue;
+                        }
+
+                        yield return cocaOp;
+                        if (cocaOp.Result != null && cocaOp.Result is GameObject cocaObj)
+                        {
+                            segment.TrackAddressableInstance(cocaObj);
+                            cocaObj.transform.SetParent(segment.transform, true);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Unable to load CocaCoin prefab. Make sure it is marked Addressable.");
+                            if (cocaOp.IsValid()) Addressables.Release(cocaOp);
+                        }
+                        currentWorldPos += increment;
+                        continue;
+                    }
                 }
                 else
                 {

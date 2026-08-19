@@ -26,13 +26,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 108166}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0057810866, y: 0.002083425, z: -0.007157897, w: 0.99995553}
-  m_LocalPosition: {x: 0.039001465, y: 0.86299896, z: -0.0009994507}
-  m_LocalScale: {x: 0.5909433, y: 0.52837616, z: 4.294067}
+  m_LocalRotation: {x: -0.00556257, y: 0.032241683, z: -0.0073290006, w: 0.99943775}
+  m_LocalPosition: {x: 0.039, y: 0.872, z: -0.001}
+  m_LocalScale: {x: 0.85426724, y: 0.77428216, z: 2.0157874}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 429504}
-  m_LocalEulerAnglesHint: {x: -0.661, y: 0.243, z: -0.822}
+  m_LocalEulerAnglesHint: {x: -0.61, y: 3.7, z: -0.86}
 --- !u!33 &8765560279957380442
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5d4c7d16d9f649e4fbd44c930c50917d, type: 2}
+  - {fileID: 2100000, guid: 9c5252b8e55e62c47915228197dd0247, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -189,10 +189,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 429504}
-  - component: {fileID: 11457466}
   - component: {fileID: 6552710}
+  - component: {fileID: 5304432543737489547}
   m_Layer: 8
-  m_Name: Pickup
+  m_Name: Coca coin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,28 +206,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 184264}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.29, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.029619304, y: -0.048102006, z: -0.005509327, w: 0.99838793}
+  m_LocalPosition: {x: -101.6582, y: -100.302086, z: -89.27158}
+  m_LocalScale: {x: 1.56045, y: 1.56045, z: 1.56045}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 435650}
   - {fileID: 428000}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &11457466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 184264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b1d85a2c7e28e1459060064df24f9b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPremium: 0
+  m_LocalEulerAnglesHint: {x: -3.421, y: -5.503, z: -0.468}
 --- !u!65 &6552710
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -249,3 +236,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8129257, y: 1.0534481, z: 0.42}
   m_Center: {x: -0.0009149313, y: 0.7932294, z: 0.0013843775}
+--- !u!114 &5304432543737489547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 206a47f846b98f948b19fd62428a6e85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CocaCoin
+  duration: 1
+  icon: {fileID: 21300000, guid: 867c2e4c3df69db40b65cb4bd75748df, type: 3}
+  activatedSound: {fileID: 0}
+  ActivatedParticleReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  canBeSpawned: 1
+  coinValue: 5

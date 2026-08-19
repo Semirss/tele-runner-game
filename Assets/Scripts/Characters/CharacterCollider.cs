@@ -104,6 +104,20 @@ public class CharacterCollider : MonoBehaviour
 			if (magnetCoins.Contains(c.gameObject))
 				magnetCoins.Remove(c.gameObject);
 
+            CocaCoin cocaCoin = c.GetComponent<CocaCoin>();
+            if (cocaCoin != null)
+            {
+                TrackSegment owningSegment = c.GetComponentInParent<TrackSegment>();
+                if (owningSegment != null)
+                    owningSegment.UntrackAddressableInstance(c.gameObject);
+
+                Addressables.ReleaseInstance(c.gameObject);
+                PlayerData.instance.coins += cocaCoin.coinValue;
+                controller.coins += cocaCoin.coinValue;
+                m_Audio.PlayOneShot(coinSound);
+                return;
+            }
+
             if (c.GetComponent<Coin>().isPremium)
             {
                 TrackSegment owningSegment = c.GetComponentInParent<TrackSegment>();
