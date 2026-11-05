@@ -78,22 +78,24 @@ public class LoadoutState : AState
 
     public override void Enter(AState from)
     {
+        TransitMenuDesign menuDesign = GetComponent<TransitMenuDesign>();
+        bool transitMenu = menuDesign != null && menuDesign.isActiveAndEnabled;
         inventoryCanvas.gameObject.SetActive(true);
         missionPopup.gameObject.SetActive(false);
-        if (backgrounddeletable != null) backgrounddeletable.SetActive(true);
+        if (backgrounddeletable != null) backgrounddeletable.SetActive(!transitMenu);
 
         charNameDisplay.text = "";
         themeNameDisplay.text = "";
 
         k_UILayer = LayerMask.NameToLayer("UI");
 
-        skyMeshFilter.gameObject.SetActive(true);
-        UIGroundFilter.gameObject.SetActive(true);
+        skyMeshFilter.gameObject.SetActive(!transitMenu);
+        UIGroundFilter.gameObject.SetActive(!transitMenu);
 
         // Reseting the global blinking value. Can happen if the game unexpectedly exited while still blinking
         Shader.SetGlobalFloat("_BlinkingValue", 0.0f);
 
-        if (MusicPlayer.instance.GetStem(0) != menuTheme)
+        if (MusicPlayer.instance != null && MusicPlayer.instance.GetStem(0) != menuTheme)
 		{
             MusicPlayer.instance.SetStem(0, menuTheme);
             StartCoroutine(MusicPlayer.instance.RestartAllStems());

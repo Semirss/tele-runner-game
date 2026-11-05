@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[DefaultExecutionOrder(-1000)]
 public class MusicPlayer : MonoBehaviour
 {
     [System.Serializable]

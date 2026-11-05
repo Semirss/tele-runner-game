@@ -21,6 +21,9 @@ public class ShopUI : MonoBehaviour
 
     protected const int k_CheatCoins = 1000000;
     protected const int k_CheatPremium = 1000;
+    RectTransform safePanel;
+    Rect lastSafeArea;
+    Vector2Int lastScreenSize;
 
     void Awake()
     {
@@ -30,6 +33,49 @@ public class ShopUI : MonoBehaviour
         RemoveOldShopSection("TabsSwitch");
         RemoveOldShopSection("IAPPopup");
         RemoveOldShopSection("AddCoins");
+        SetupSafeLayout();
+    }
+
+    void SetupSafeLayout()
+    {
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) return;
+        CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+        if (scaler != null) scaler.matchWidthOrHeight = 0f;
+        safePanel = transform.Find("Background") as RectTransform;
+        if (safePanel == null) return;
+
+        GameObject backdrop = new GameObject("Store full-screen backdrop",
+            typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        backdrop.layer = 5;
+        RectTransform rect = backdrop.GetComponent<RectTransform>();
+        rect.SetParent(canvas.transform, false);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        rect.SetAsFirstSibling();
+        Image image = backdrop.GetComponent<Image>();
+        image.color = new Color32(4, 30, 86, 255);
+        image.raycastTarget = false;
+        ApplySafeLayout();
+    }
+
+    void ApplySafeLayout()
+    {
+        if (safePanel == null || Screen.width <= 0 || Screen.height <= 0) return;
+        Rect safe = Screen.safeArea;
+        Vector2Int size = new Vector2Int(Screen.width, Screen.height);
+        if (safe == lastSafeArea && size == lastScreenSize) return;
+        lastSafeArea = safe;
+        lastScreenSize = size;
+        float sideInset = Mathf.Min(16f, safe.width * .025f);
+        safe.xMin += sideInset;
+        safe.xMax -= sideInset;
+        safe.yMin += 8f;
+        safe.yMax -= 8f;
+        safePanel.anchorMin = new Vector2(safe.xMin / Screen.width, safe.yMin / Screen.height);
+        safePanel.anchorMax = new Vector2(safe.xMax / Screen.width, safe.yMax / Screen.height);
+        safePanel.offsetMin = safePanel.offsetMax = Vector2.zero;
     }
 
     void Start()
@@ -55,6 +101,7 @@ public class ShopUI : MonoBehaviour
 
     void Update()
     {
+        ApplySafeLayout();
         if (coinCounter != null)
             coinCounter.text = PlayerData.instance.coins.ToString();
 

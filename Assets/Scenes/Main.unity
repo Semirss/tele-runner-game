@@ -9112,6 +9112,8 @@ GameObject:
   - component: {fileID: 869760746}
   - component: {fileID: 869760745}
   - component: {fileID: 869760749}
+  - component: {fileID: 869760750}
+  - component: {fileID: 869760751}
   m_Layer: 5
   m_Name: Loadout
   m_TagString: Untagged
@@ -9252,6 +9254,46 @@ MonoBehaviour:
   UIGroundFilter: {fileID: 517316206}
   menuTheme: {fileID: 8300000, guid: 1588137430bfbab4b9a00ba3b220b82b, type: 3}
   consumableIcon: {fileID: 11439736, guid: 0c5f0793b82536342bd64bc3e3fdee8a, type: 3}
+--- !u!114 &869760750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869760744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e55a46a9c6438d9be4e7f6d9ad6f21, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!114 &869760751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869760744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75c98e4151c4e25b67f2453ae62816b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  panelWidth: 820
+  registerHeight: 1080
+  signInHeight: 890
+  sidePadding: 46
+  rowSpacing: 14
+  backdrop: {r: 0.008, g: 0.035, b: 0.12, a: 0.88}
+  panel: {r: 0.01176, g: 0.10588, b: 0.32157, a: 1}
+  navy: {r: 0.01176, g: 0.10588, b: 0.32157, a: 1}
+  blue: {r: 0.0549, g: 0.39608, b: 0.7647, a: 1}
+  yellow: {r: 1, g: 0.82353, b: 0.09412, a: 1}
+  paper: {r: 0.98039, g: 0.98431, b: 0.99216, a: 1}
+  mutedText: {r: 0.35686, g: 0.44314, b: 0.6, a: 1}
+  brandText: TELE RUNNER
+  partnerText: SUN CHIPS
+  registerTitle: CREATE YOUR PLAYER
+  signInTitle: WELCOME BACK
 --- !u!1 &878427076
 GameObject:
   m_ObjectHideFlags: 0
@@ -20004,9 +20046,9 @@ RectTransform:
   - {fileID: 590977524}
   m_Father: {fileID: 869760748}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00000429157, y: -39.999977}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -145, y: -65}
   m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1667271469
@@ -30664,6 +30706,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139237685}
   m_CullTransparentMesh: 0
+--- !u!1 &2146000201
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2146000202}
+  - component: {fileID: 2146000203}
+  m_Layer: 5
+  m_Name: PlayerRegistrationUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2146000202
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146000201}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2146000203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146000201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8745223f7080bb44894c4b9e2e3ebfe4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!1001 &2146000301
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4122528372401330, guid: fc9855a6b2a67364ebc0db28e7bbc98b, type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114322282601092784, guid: fc9855a6b2a67364ebc0db28e7bbc98b, type: 3}
+      propertyPath: stems.Array.data[0].clip
+      value:
+      objectReference: {fileID: 8300000, guid: 1588137430bfbab4b9a00ba3b220b82b, type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fc9855a6b2a67364ebc0db28e7bbc98b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -30678,3 +30789,5 @@ SceneRoots:
   - {fileID: 1916993085}
   - {fileID: 162371111}
   - {fileID: 1817952358}
+  - {fileID: 2146000202}
+  - {fileID: 2146000301}

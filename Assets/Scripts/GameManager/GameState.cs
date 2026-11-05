@@ -37,6 +37,10 @@ public class GameState : AState
     public Button premiumForLifeButton;
     public Text premiumCurrencyOwned;
 
+    [Header("Loading")]
+    public Color loadingOverlayColor = new Color(0.02f, 0.06f, 0.09f, 1.0f);
+    public string loadingMessage = "Loading...";
+
     [Header("Prefabs")]
     public GameObject PowerupIconPrefab;
 
@@ -49,6 +53,8 @@ public class GameState : AState
 
     protected RectTransform m_CountdownRectTransform;
     protected bool m_WasMoving;
+    protected GameObject m_LoadingOverlay;
+    protected Text m_LoadingOverlayText;
 
     protected bool m_GameoverSelectionDone = false;
 
@@ -95,9 +101,10 @@ public class GameState : AState
         if (pauseMenu != null)
             pauseMenu.gameObject.SetActive(false);
         if (wholeUI != null)
-            wholeUI.gameObject.SetActive(true);
+            wholeUI.gameObject.SetActive(false);
         if (pauseButton != null)
-            pauseButton.gameObject.SetActive(true);
+            pauseButton.gameObject.SetActive(false);
+        SetLoadingOverlayVisible(true);
         HideGameOverUI();
 
         if (!trackManager.isRerun)
@@ -128,6 +135,12 @@ public class GameState : AState
         {
             UpdateUI();
             return;
+        }
+
+        if (!AudioListener.pause)
+        {
+            SetLoadingOverlayVisible(false);
+            SetGameplayUIVisible(true);
         }
 
         CharacterInputController chrCtrl = trackManager.characterController;
@@ -260,12 +273,21 @@ public class GameState : AState
 
         if (!trackManager.isLoaded)
         {
-            countdownText.gameObject.SetActive(true);
-            countdownText.text = trackManager.loadFailed ? "Load failed\nCheck Console" : "Loading...";
-            m_CountdownRectTransform.localScale = Vector3.one;
+            SetGameplayUIVisible(false);
+            SetLoadingOverlayVisible(true);
+            if (m_LoadingOverlayText != null)
+                m_LoadingOverlayText.text = trackManager.loadFailed ? "Load failed\nCheck Console" : loadingMessage;
+            if (countdownText != null)
+                countdownText.gameObject.SetActive(false);
+            return;
         }
         else if (trackManager.timeToStart >= 0)
         {
+            if (!AudioListener.pause)
+            {
+                SetLoadingOverlayVisible(false);
+                SetGameplayUIVisible(true);
+            }
             countdownText.gameObject.SetActive(true);
             countdownText.text = Mathf.Ceil(trackManager.timeToStart).ToString();
             m_CountdownRectTransform.localScale = Vector3.one * (1.0f - (trackManager.timeToStart - Mathf.Floor(trackManager.timeToStart)));
@@ -284,6 +306,68 @@ public class GameState : AState
         {
             inventoryIcon.transform.parent.gameObject.SetActive(false);
         }
+    }
+
+    protected void SetGameplayUIVisible(bool visible)
+    {
+        if (wholeUI != null && wholeUI.gameObject.activeSelf != visible)
+            wholeUI.gameObject.SetActive(visible);
+        if (pauseButton != null && pauseButton.gameObject.activeSelf != visible)
+            pauseButton.gameObject.SetActive(visible);
+    }
+
+    protected void SetLoadingOverlayVisible(bool visible)
+    {
+        EnsureLoadingOverlay();
+        if (m_LoadingOverlay != null && m_LoadingOverlay.activeSelf != visible)
+            m_LoadingOverlay.SetActive(visible);
+    }
+
+    protected void EnsureLoadingOverlay()
+    {
+        if (m_LoadingOverlay != null || canvas == null)
+            return;
+
+        GameObject overlay = new GameObject("LoadingOverlay", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        overlay.transform.SetParent(canvas.transform, false);
+        overlay.transform.SetAsLastSibling();
+
+        RectTransform overlayRect = overlay.GetComponent<RectTransform>();
+        overlayRect.anchorMin = Vector2.zero;
+        overlayRect.anchorMax = Vector2.one;
+        overlayRect.offsetMin = Vector2.zero;
+        overlayRect.offsetMax = Vector2.zero;
+        overlayRect.localScale = Vector3.one;
+
+        Image overlayImage = overlay.GetComponent<Image>();
+        overlayImage.color = loadingOverlayColor;
+        overlayImage.raycastTarget = true;
+
+        GameObject message = new GameObject("Message", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+        message.transform.SetParent(overlay.transform, false);
+
+        RectTransform messageRect = message.GetComponent<RectTransform>();
+        messageRect.anchorMin = new Vector2(0.5f, 0.5f);
+        messageRect.anchorMax = new Vector2(0.5f, 0.5f);
+        messageRect.pivot = new Vector2(0.5f, 0.5f);
+        messageRect.anchoredPosition = Vector2.zero;
+        messageRect.sizeDelta = new Vector2(720f, 180f);
+        messageRect.localScale = Vector3.one;
+
+        m_LoadingOverlayText = message.GetComponent<Text>();
+        m_LoadingOverlayText.text = loadingMessage;
+        m_LoadingOverlayText.alignment = TextAnchor.MiddleCenter;
+        m_LoadingOverlayText.color = Color.white;
+        m_LoadingOverlayText.fontSize = 48;
+        m_LoadingOverlayText.resizeTextForBestFit = true;
+        m_LoadingOverlayText.resizeTextMinSize = 24;
+        m_LoadingOverlayText.resizeTextMaxSize = 56;
+        m_LoadingOverlayText.font = countdownText != null && countdownText.font != null
+            ? countdownText.font
+            : Resources.GetBuiltinResource<Font>("Arial.ttf");
+        m_LoadingOverlayText.raycastTarget = false;
+
+        m_LoadingOverlay = overlay;
     }
 
     IEnumerator WaitForGameOver()

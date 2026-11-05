@@ -90,10 +90,8 @@ public class CharacterInputController : MonoBehaviour
 	    m_IsRunning = false;
     }
 
-#if !UNITY_STANDALONE
     protected Vector2 m_StartingTouch;
-	protected bool m_IsSwiping = false;
-#endif
+    protected bool m_IsSwiping = false;
 
     // Mouse swipe support (works on all platforms including WebGL)
     protected Vector2 m_MouseStartPosition;
@@ -223,8 +221,7 @@ public class CharacterInputController : MonoBehaviour
 
 	protected void Update ()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
-        // Use key input in editor or standalone
+        // Use key input on every platform that can receive keyboard events.
         // disabled if it's tutorial and not thecurrent right tutorial level (see func TutorialMoveCheck)
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -244,7 +241,7 @@ public class CharacterInputController : MonoBehaviour
 			if(!m_Sliding)
 				Slide();
 		}
-#else
+
         // Use touch input on mobile
         if (Input.touchCount == 1)
         {
@@ -297,7 +294,6 @@ public class CharacterInputController : MonoBehaviour
 				m_IsSwiping = false;
 			}
         }
-#endif
 
         // Mouse swipe input (works on all platforms: Editor, Standalone, WebGL, etc.)
         if (Input.touchCount == 0)

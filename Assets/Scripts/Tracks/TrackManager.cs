@@ -142,6 +142,8 @@ public class TrackManager : MonoBehaviour
     protected const int k_StartingSafeSegments = 2;
     protected const int k_StartingCoinPoolSize = 256;
     protected const int k_DesiredSegmentCount = 10;
+    protected const int k_MaxSegmentLoadStartsPerFrame = 1;
+    protected const int k_MaxCloudSpawnAttemptsPerFrame = 1;
     protected const float k_SegmentRemovalDistance = -30f;
     protected const float k_Acceleration = 0.2f;
     protected const int k_MaxSegmentSpawnFailures = 25;
@@ -422,17 +424,25 @@ public class TrackManager : MonoBehaviour
 
         if (m_SegmentSpawnFailures < k_MaxSegmentSpawnFailures && Time.unscaledTime >= m_NextSegmentSpawnRetryTime)
         {
-            while (_spawnedSegments < k_DesiredSegmentCount)
+            int targetSegmentCount = m_IsMoving ? k_DesiredSegmentCount : k_StartingSafeSegments + 1;
+            int segmentLoadsStarted = 0;
+
+            while (_spawnedSegments < targetSegmentCount && segmentLoadsStarted < k_MaxSegmentLoadStartsPerFrame)
             {
                 StartCoroutine(SpawnNewSegment());
                 _spawnedSegments++;
+                segmentLoadsStarted++;
             }
         }
 
         if (parallaxRoot != null && currentTheme.cloudPrefabs != null && currentTheme.cloudPrefabs.Length > 0)
         {
-            while (_parallaxRootChildren < currentTheme.cloudNumber)
+            int cloudSpawnAttempts = 0;
+
+            while (_parallaxRootChildren < currentTheme.cloudNumber && cloudSpawnAttempts < k_MaxCloudSpawnAttemptsPerFrame)
             {
+                cloudSpawnAttempts++;
+
                 float lastZ = parallaxRoot.childCount == 0 ? 0 : parallaxRoot.GetChild(parallaxRoot.childCount - 1).position.z + currentTheme.cloudMinimumDistance.z;
 
                 GameObject cloud = currentTheme.cloudPrefabs[Random.Range(0, currentTheme.cloudPrefabs.Length)];
